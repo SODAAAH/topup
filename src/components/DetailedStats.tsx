@@ -140,7 +140,11 @@ export const DetailedStats: React.FC<DetailedStatsProps> = ({ result }) => {
             {result.trueAverage !== null ? result.trueAverage.toFixed(2) : '—'}
             <span className="text-xs font-normal text-[#74716D] ml-1">/ draw</span>
           </div>
-          <span className="text-[11px] text-[#98948D] block mt-0.5">Milestones deducted</span>
+          <span className="text-[11px] text-[#98948D] block mt-0.5">
+            {result.statistics && result.statistics.ciLower !== null && result.statistics.ciUpper !== null
+              ? `95% CI: ${result.statistics.ciLower.toFixed(2)}–${result.statistics.ciUpper.toFixed(2)}`
+              : 'Milestones deducted'}
+          </span>
         </div>
 
         <div>

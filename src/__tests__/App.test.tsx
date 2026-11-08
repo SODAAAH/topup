@@ -28,8 +28,8 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     fireEvent.change(remnantsInput, { target: { value: '65' } });
 
     expect(screen.getByText('Below 120-draw planning pace')).toBeInTheDocument();
-    expect(screen.getByText(/Very Early Sample/i)).toBeInTheDocument();
-    expect(screen.getByText(/you've only completed 8 draws/i)).toBeInTheDocument();
+    expect(screen.getByText(/Too Early to Tell/i)).toBeInTheDocument();
+    expect(screen.getByText(/Not enough results to judge your average/i)).toBeInTheDocument();
   });
 
   it('calculates within 110–115 extended range for 22 draws and 319 remnants', () => {
@@ -42,7 +42,7 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     fireEvent.change(remnantsInput, { target: { value: '319' } });
 
     expect(screen.getByText('Within 110–115 extended range')).toBeInTheDocument();
-    expect(screen.getByText(/Limited Sample/i)).toBeInTheDocument();
+    expect(screen.getByText(/Too Early to Tell/i)).toBeInTheDocument();
   });
 
   it('calculates above pace for 20 draws and 329 remnants', () => {
@@ -64,6 +64,10 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     fireEvent.click(tipidPlanTab);
     expect(screen.getByText(/Daily Tipid Checklist & Event Roadmap/i)).toBeInTheDocument();
     expect(screen.getByText(/Day 1 — Event Launch & Mega Bundles/i)).toBeInTheDocument();
+
+    const historyTab = screen.getByRole('button', { name: /Draw History & Stats/i });
+    fireEvent.click(historyTab);
+    expect(screen.getByText(/Record Draw Results/i)).toBeInTheDocument();
 
     const budgetTab = screen.getByRole('button', { name: /Diamond & Budget/i });
     fireEvent.click(budgetTab);
@@ -96,14 +100,14 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     const trackerTab = screen.getByRole('button', { name: /Remnant Tracker/i });
     fireEvent.click(trackerTab);
 
-    const syncButton = screen.getByRole('button', { name: /Synced from Plan/i });
+    const syncButton = screen.getByRole('button', { name: /^Tipid \(\d+\)$/i });
     fireEvent.click(syncButton);
 
     const drawsInput = screen.getByPlaceholderText(/Enter your total draws/i) as HTMLInputElement;
     expect(drawsInput.value).toBe('6');
     expect(drawsInput).toHaveAttribute('readonly');
 
-    const manualButton = screen.getByRole('button', { name: /Manual Input/i });
+    const manualButton = screen.getByRole('button', { name: /^Manual$/i });
     fireEvent.click(manualButton);
 
     expect(drawsInput).not.toHaveAttribute('readonly');
@@ -173,5 +177,29 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
 
     fireEvent.click(add200RemnantsBtn);
     expect(remnantsInput.value).toBe('253');
+  });
+
+  it('records draw history batches, updates statistics, and reflects in tracker', () => {
+    render(<App />);
+
+    const historyTab = screen.getByRole('button', { name: /Draw History & Stats/i });
+    fireEvent.click(historyTab);
+
+    expect(screen.getByText(/Record Draw Results/i)).toBeInTheDocument();
+
+    const saveBatchBtn = screen.getByRole('button', { name: /Save 10 Draws to History/i });
+    fireEvent.click(saveBatchBtn);
+
+    expect(screen.getByText(/Recorded Draw Log \(10 draws\)/i)).toBeInTheDocument();
+
+    const trackerTab = screen.getByRole('button', { name: /Remnant Tracker/i });
+    fireEvent.click(trackerTab);
+
+    const historyModeBtn = screen.getByRole('button', { name: /Draw Log \(10\)/i });
+    fireEvent.click(historyModeBtn);
+
+    const drawsInput = screen.getByPlaceholderText(/Enter your total draws/i) as HTMLInputElement;
+    expect(drawsInput.value).toBe('10');
+    expect(drawsInput).toHaveAttribute('readonly');
   });
 });

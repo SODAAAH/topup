@@ -155,7 +155,7 @@ export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
                 {message}
               </p>
 
-              {confidenceMessage && draws > 0 && confidence !== 'none' && confidence !== 'informative' && (
+              {confidenceMessage && draws > 0 && confidence !== 'none' && (
                 <div className="mt-2.5 pt-2 border-t border-black/10 text-xs text-[#5C5853] flex items-center gap-1.5 flex-wrap">
                   <span className="font-semibold text-[#292929]">{confidenceTitle} ({draws} draws):</span>
                   <span>{confidenceMessage}</span>

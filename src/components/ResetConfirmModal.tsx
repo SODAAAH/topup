@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AlertTriangle, RotateCcw, X } from 'lucide-react';
 
-export type ResetScope = 'all' | 'calc' | 'tipid' | 'budget';
+export type ResetScope = 'all' | 'calc' | 'tipid' | 'budget' | 'history';
 
 interface ResetConfirmModalProps {
   isOpen: boolean;
@@ -80,7 +80,7 @@ export const ResetConfirmModal: React.FC<ResetConfirmModalProps> = ({
               />
               <div>
                 <span className="font-semibold text-[#292929] block text-xs">Reset All Tracker Data</span>
-                <span className="text-[11px] text-[#74716D]">Clears calculator inputs, checklist progress, and purchase records.</span>
+                <span className="text-[11px] text-[#74716D]">Clears calculator inputs, draw history, checklist progress, and purchase records.</span>
               </div>
             </label>
 
@@ -95,7 +95,22 @@ export const ResetConfirmModal: React.FC<ResetConfirmModalProps> = ({
               />
               <div>
                 <span className="font-semibold text-[#292929] block text-xs">Reset Remnant Calculator Only</span>
-                <span className="text-[11px] text-[#74716D]">Clears draws and remnants inputs. Preserves your Tipid Plan checklist.</span>
+                <span className="text-[11px] text-[#74716D]">Clears draws and remnants inputs. Preserves your Draw History and Tipid Plan.</span>
+              </div>
+            </label>
+
+            <label className="flex items-center gap-3 p-3 rounded-lg bg-[#F7F6F2] border border-[#E9E6E0] cursor-pointer hover:border-[#D5D0C5] transition-colors touch-manipulation">
+              <input
+                type="radio"
+                name="reset-scope"
+                aria-label="Reset Draw History Only"
+                checked={scope === 'history'}
+                onChange={() => setScope('history')}
+                className="accent-[#B52E45] w-4 h-4 shrink-0"
+              />
+              <div>
+                <span className="font-semibold text-[#292929] block text-xs">Reset Draw History Only</span>
+                <span className="text-[11px] text-[#74716D]">Clears recorded individual draw outcomes. Preserves checklist and budget.</span>
               </div>
             </label>
 

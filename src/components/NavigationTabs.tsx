@@ -17,6 +17,7 @@ export const NavigationTabs: React.FC<NavigationTabsProps> = ({
 }) => {
   const tabs: Array<{ id: ActiveTab; label: string }> = [
     { id: 'tracker', label: 'Remnant Tracker' },
+    { id: 'draw-history', label: 'Draw History & Stats' },
     { id: 'tipid-plan', label: 'Daily Tipid Plan' },
     { id: 'diamond-budget', label: 'Diamond & Budget' },
     { id: 'plan-vs-actual', label: 'Plan vs. Actual' },

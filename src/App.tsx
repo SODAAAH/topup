@@ -10,18 +10,35 @@ import { HelpAccordion } from './components/HelpAccordion';
 import { TipidPlanChecklist } from './components/TipidPlanChecklist';
 import { DiamondBudgetTracker } from './components/DiamondBudgetTracker';
 import { PlanVsActualDashboard } from './components/PlanVsActualDashboard';
+import { DrawHistorySection } from './components/DrawHistorySection';
+import { StatisticalAnalysisCard } from './components/StatisticalAnalysisCard';
+import { DrawDistributionChart } from './components/DrawDistributionChart';
 import { ResetConfirmModal, ResetScope } from './components/ResetConfirmModal';
-import { ActiveTab, ScheduleTask, TipidPlanState, TrackerInputs } from './types/tracker';
+import {
+  ActiveTab,
+  DrawRecord,
+  DuplicateConversionConfig,
+  ScheduleTask,
+  TipidPlanState,
+  TrackerInputs,
+} from './types/tracker';
 import { calculateTrackerPace } from './utils/calculator';
 import {
   loadSavedCalcInputs,
   saveCalcInputs,
   loadSavedTipidState,
   saveTipidState,
+  loadSavedDrawRecords,
+  saveDrawRecords,
+  clearDrawRecords,
+  loadSavedDuplicateConfig,
+  saveDuplicateConfig,
   clearCalcData,
   clearAllTrackerData,
   exportFullBackupJSON,
   importFullBackupJSON,
+  exportDrawHistoryCSV,
+  importDrawHistoryCSV,
 } from './utils/storage';
 import { EVENT_CONFIG } from './config/eventConfig';
 import { INITIAL_TIPID_STATE } from './config/tipidPlanConfig';
@@ -52,6 +69,14 @@ export const App: React.FC = () => {
     return loadSavedTipidState();
   });
 
+  const [drawRecords, setDrawRecords] = useState<DrawRecord[]>(() => {
+    return loadSavedDrawRecords();
+  });
+
+  const [duplicateConfig, setDuplicateConfig] = useState<DuplicateConversionConfig>(() => {
+    return loadSavedDuplicateConfig();
+  });
+
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [resetScope, setResetScope] = useState<ResetScope>('all');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -63,6 +88,14 @@ export const App: React.FC = () => {
   useEffect(() => {
     saveTipidState(tipidState);
   }, [tipidState]);
+
+  useEffect(() => {
+    saveDrawRecords(drawRecords);
+  }, [drawRecords]);
+
+  useEffect(() => {
+    saveDuplicateConfig(duplicateConfig);
+  }, [duplicateConfig]);
 
   const ledgerDraws = useMemo(() => {
     return (tipidState.tasks || [])
@@ -89,12 +122,20 @@ export const App: React.FC = () => {
         draws: ledgerDraws,
       };
     }
+    if (calcInputs.drawSourceMode === 'history') {
+      const historyTotalRemnants = drawRecords.reduce((sum, r) => sum + r.totalRemnants, 0);
+      return {
+        ...calcInputs,
+        draws: drawRecords.length,
+        remnants: historyTotalRemnants,
+      };
+    }
     return calcInputs;
-  }, [calcInputs, ledgerDraws]);
+  }, [calcInputs, ledgerDraws, drawRecords]);
 
   const calculationResult = useMemo(() => {
-    return calculateTrackerPace(effectiveInputs, EVENT_CONFIG);
-  }, [effectiveInputs]);
+    return calculateTrackerPace(effectiveInputs, EVENT_CONFIG, drawRecords);
+  }, [effectiveInputs, drawRecords]);
 
   const handleCalcChange = (newInputs: TrackerInputs) => {
     setCalcInputs(newInputs);
@@ -138,6 +179,48 @@ export const App: React.FC = () => {
     }));
   };
 
+  const handleAddDrawRecords = (newRecords: DrawRecord[]) => {
+    setDrawRecords((prev) => {
+      const map = new Map<number, DrawRecord>();
+      prev.forEach((r) => map.set(r.drawNumber, r));
+      newRecords.forEach((r) => map.set(r.drawNumber, r));
+      return Array.from(map.values()).sort((a, b) => a.drawNumber - b.drawNumber);
+    });
+  };
+
+  const handleDeleteDrawRecord = (id: string) => {
+    setDrawRecords((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const handleClearDrawHistory = () => {
+    handleOpenReset('history');
+  };
+
+  const handleExportCSV = () => {
+    const csvContent = exportDrawHistoryCSV(drawRecords);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `kagura-draw-history-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportCSV = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      if (text) {
+        const merged = importDrawHistoryCSV(text, drawRecords);
+        setDrawRecords(merged);
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const handleOpenReset = (scope: ResetScope) => {
     setResetScope(scope);
     setIsResetModalOpen(true);
@@ -153,6 +236,7 @@ export const App: React.FC = () => {
         drawSourceMode: 'manual',
       });
       setTipidState(INITIAL_TIPID_STATE);
+      setDrawRecords([]);
     } else if (scope === 'calc') {
       clearCalcData();
       setCalcInputs({
@@ -161,6 +245,9 @@ export const App: React.FC = () => {
         customClaimedMilestones: {},
         drawSourceMode: 'manual',
       });
+    } else if (scope === 'history') {
+      clearDrawRecords();
+      setDrawRecords([]);
     } else if (scope === 'tipid') {
       setTipidState((prev) => ({
         ...prev,
@@ -177,7 +264,7 @@ export const App: React.FC = () => {
   };
 
   const handleExportBackup = () => {
-    const jsonStr = exportFullBackupJSON(calcInputs, tipidState);
+    const jsonStr = exportFullBackupJSON(calcInputs, tipidState, drawRecords, duplicateConfig);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -199,6 +286,12 @@ export const App: React.FC = () => {
       if (imported) {
         setCalcInputs(imported.calc);
         setTipidState(imported.tipid);
+        if (imported.drawRecords) {
+          setDrawRecords(imported.drawRecords);
+        }
+        if (imported.duplicateConfig) {
+          setDuplicateConfig(imported.duplicateConfig);
+        }
       }
     };
     reader.readAsText(file);
@@ -209,6 +302,7 @@ export const App: React.FC = () => {
     calcInputs.draws !== '' ||
     calcInputs.remnants !== '' ||
     Object.keys(calcInputs.customClaimedMilestones || {}).length > 0 ||
+    drawRecords.length > 0 ||
     tipidState.tasks.some((t) => t.status !== 'pending') ||
     tipidState.purchases.length > 0;
 
@@ -226,6 +320,12 @@ export const App: React.FC = () => {
             if (imported) {
               setCalcInputs(imported.calc);
               setTipidState(imported.tipid);
+              if (imported.drawRecords) {
+                setDrawRecords(imported.drawRecords);
+              }
+              if (imported.duplicateConfig) {
+                setDuplicateConfig(imported.duplicateConfig);
+              }
             }
           };
           reader.readAsText(file);
@@ -262,6 +362,7 @@ export const App: React.FC = () => {
               <CalculatorForm
                 inputs={calcInputs}
                 ledgerDraws={ledgerDraws}
+                historyDrawsCount={drawRecords.length}
                 onChange={handleCalcChange}
                 onCalculate={() => {}}
                 validationError={calculationResult.validationError}
@@ -298,6 +399,28 @@ export const App: React.FC = () => {
               />
             </section>
 
+            {drawRecords.length > 0 && (
+              <section aria-labelledby="statistical-analysis-heading">
+                <h3 id="statistical-analysis-heading" className="sr-only">Statistical Analysis</h3>
+                <StatisticalAnalysisCard
+                  result={calculationResult}
+                  statistics={calculationResult.statistics}
+                  totalDraws={calculationResult.draws}
+                  recordedDrawsCount={drawRecords.length}
+                />
+              </section>
+            )}
+
+            {drawRecords.length > 0 && (
+              <section aria-labelledby="distribution-chart-heading">
+                <h3 id="distribution-chart-heading" className="sr-only">Performance Distribution</h3>
+                <DrawDistributionChart
+                  records={drawRecords}
+                  meanAverage={calculationResult.trueAverage}
+                />
+              </section>
+            )}
+
             <section aria-labelledby="detailed-stats-heading">
               <h3 id="detailed-stats-heading" className="sr-only">Detailed Breakdown</h3>
               <DetailedStats result={calculationResult} />
@@ -311,6 +434,42 @@ export const App: React.FC = () => {
             <section aria-labelledby="help-guide-heading">
               <h3 id="help-guide-heading" className="sr-only">Educational Guide</h3>
               <HelpAccordion />
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'draw-history' && (
+          <div className="space-y-5 sm:space-y-6 animate-in fade-in duration-150">
+            <section aria-labelledby="stats-summary-heading">
+              <h2 id="stats-summary-heading" className="sr-only">Statistical Sample Analysis</h2>
+              <StatisticalAnalysisCard
+                result={calculationResult}
+                statistics={calculationResult.statistics}
+                totalDraws={calculationResult.draws}
+                recordedDrawsCount={drawRecords.length}
+              />
+            </section>
+
+            <section aria-labelledby="draw-chart-heading">
+              <h3 id="draw-chart-heading" className="sr-only">Draw Consistency & Rolling Average</h3>
+              <DrawDistributionChart
+                records={drawRecords}
+                meanAverage={calculationResult.trueAverage}
+              />
+            </section>
+
+            <section aria-labelledby="draw-history-log-heading">
+              <h3 id="draw-history-log-heading" className="sr-only">Individual Draw Log & Batch Entry</h3>
+              <DrawHistorySection
+                records={drawRecords}
+                duplicateConfig={duplicateConfig}
+                onAddRecords={handleAddDrawRecords}
+                onDeleteRecord={handleDeleteDrawRecord}
+                onClearHistory={handleClearDrawHistory}
+                onUpdateDuplicateConfig={setDuplicateConfig}
+                onExportCSV={handleExportCSV}
+                onImportCSV={handleImportCSV}
+              />
             </section>
           </div>
         )}

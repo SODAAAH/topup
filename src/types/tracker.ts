@@ -25,7 +25,98 @@ export interface EventConfig {
   contingencyBenchmarkRate: number;
 }
 
-export type DrawSourceMode = 'manual' | 'ledger';
+export type DrawSourceMode = 'manual' | 'ledger' | 'history';
+
+export type DuplicateRarity =
+  | 'none'
+  | 'emote'
+  | 'basic'
+  | 'elite'
+  | 'special'
+  | 'epic'
+  | 'exclusive_epic'
+  | 'legend'
+  | 'other';
+
+export interface DuplicateConversionConfig {
+  emote: number;
+  basic: number;
+  elite: number;
+  special: number;
+  epic: number;
+  exclusive_epic: number;
+  legend: number;
+  other: number;
+  unverified: Record<string, boolean>;
+}
+
+export interface DrawRecord {
+  id: string;
+  drawNumber: number;
+  timestamp: string;
+  directRemnants: number;
+  duplicateItem?: string;
+  duplicateRarity: DuplicateRarity;
+  duplicateRemnants: number;
+  totalRemnants: number;
+  notes?: string;
+}
+
+export type SampleClassificationKey =
+  | 'none'
+  | 'too_early'
+  | 'preliminary'
+  | 'moderately_informative'
+  | 'good'
+  | 'strong'
+  | 'strongest';
+
+export interface SampleClassification {
+  key: SampleClassificationKey;
+  title: string;
+  message: string;
+  minDraws: number;
+  maxDraws: number | null;
+}
+
+export interface BenchmarkCIComparison {
+  name: string;
+  targetDraws: number;
+  benchmarkRate: number;
+  status: 'above' | 'crosses' | 'below' | 'indeterminate';
+  message: string;
+}
+
+export interface StatisticalSummary {
+  count: number;
+  totalDirectRemnants: number;
+  totalDuplicateRemnants: number;
+  totalDrawGeneratedRemnants: number;
+  mean: number | null;
+  median: number | null;
+  min: number | null;
+  max: number | null;
+  sampleVariance: number | null;
+  sampleStandardDeviation: number | null;
+  standardError: number | null;
+  degreesOfFreedom: number;
+  tCritical: number | null;
+  marginOfError: number | null;
+  ciLower: number | null;
+  ciUpper: number | null;
+  ciWidth: number | null;
+  bootstrapCILower: number | null;
+  bootstrapCIUpper: number | null;
+  isZeroVariance: boolean;
+  benchmarkComparisons: BenchmarkCIComparison[];
+}
+
+export interface RunningAveragePoint {
+  drawNumber: number;
+  drawRemnants: number;
+  runningAverage: number;
+  rollingAverage?: number;
+}
 
 export interface TrackerInputs {
   draws: number | '';
@@ -85,6 +176,7 @@ export interface CalculationResult {
   confidence: ConfidenceLevel;
   confidenceTitle: string;
   confidenceMessage: string;
+  sampleClassification: SampleClassification;
   remnantsRemaining: number;
   progressPercentage: number;
   diffFromOptimisticBenchmark: number | null;
@@ -101,6 +193,9 @@ export interface CalculationResult {
   milestones: MilestoneStatus[];
   isValid: boolean;
   validationError?: string;
+  statistics?: StatisticalSummary;
+  recordedDrawsCount?: number;
+  missingDrawsCount?: number;
 }
 
 export type ScheduleTaskStatus = 'pending' | 'completed' | 'skipped' | 'modified';
@@ -146,4 +241,9 @@ export interface TipidPlanState {
   purchases: PurchaseRecord[];
 }
 
-export type ActiveTab = 'tracker' | 'tipid-plan' | 'diamond-budget' | 'plan-vs-actual';
+export type ActiveTab =
+  | 'tracker'
+  | 'draw-history'
+  | 'tipid-plan'
+  | 'diamond-budget'
+  | 'plan-vs-actual';

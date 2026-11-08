@@ -1,10 +1,11 @@
 import React from 'react';
-import { AlertCircle, Link2, Edit3 } from 'lucide-react';
+import { AlertCircle, Link2, Edit3, Layers } from 'lucide-react';
 import { DrawSourceMode, TrackerInputs } from '../types/tracker';
 
 interface CalculatorFormProps {
   inputs: TrackerInputs;
   ledgerDraws: number;
+  historyDrawsCount?: number;
   onChange: (inputs: TrackerInputs) => void;
   onCalculate: () => void;
   validationError?: string;
@@ -13,6 +14,7 @@ interface CalculatorFormProps {
 export const CalculatorForm: React.FC<CalculatorFormProps> = ({
   inputs,
   ledgerDraws,
+  historyDrawsCount = 0,
   onChange,
   onCalculate,
   validationError,
@@ -26,6 +28,11 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
         drawSourceMode: 'ledger',
         draws: ledgerDraws,
       });
+    } else if (newMode === 'history') {
+      onChange({
+        ...inputs,
+        drawSourceMode: 'history',
+      });
     } else {
       onChange({
         ...inputs,
@@ -35,7 +42,7 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
   };
 
   const handleDrawsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (mode === 'ledger') return;
+    if (mode === 'ledger' || mode === 'history') return;
     const val = e.target.value;
     if (val === '') {
       onChange({ ...inputs, draws: '' });
@@ -48,6 +55,7 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
   };
 
   const handleRemnantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (mode === 'history') return;
     const val = e.target.value;
     if (val === '') {
       onChange({ ...inputs, remnants: '' });
@@ -60,12 +68,13 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
   };
 
   const addDraws = (amount: number) => {
-    if (mode === 'ledger') return;
+    if (mode === 'ledger' || mode === 'history') return;
     const current = typeof inputs.draws === 'number' ? inputs.draws : 0;
     onChange({ ...inputs, draws: Math.max(0, current + amount) });
   };
 
   const addRemnants = (amount: number) => {
+    if (mode === 'history') return;
     const current = typeof inputs.remnants === 'number' ? inputs.remnants : 0;
     onChange({ ...inputs, remnants: Math.max(0, current + amount) });
   };
@@ -90,30 +99,42 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
           </p>
         </div>
 
-        <div className="w-full sm:w-auto grid grid-cols-2 sm:inline-flex rounded-md bg-[#F4F2EC] p-0.5 border border-[#E9E6E0] text-xs">
+        <div className="w-full sm:w-auto grid grid-cols-3 sm:inline-flex rounded-md bg-[#F4F2EC] p-0.5 border border-[#E9E6E0] text-xs">
           <button
             type="button"
             onClick={() => handleModeChange('manual')}
-            className={`min-h-[38px] px-3 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation ${
+            className={`min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation ${
               mode === 'manual'
                 ? 'bg-white text-[#292929] shadow-xs font-semibold'
                 : 'text-[#74716D] hover:text-[#292929]'
             }`}
           >
             <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Manual input</span>
+            <span>Manual</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleModeChange('history')}
+            className={`min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation ${
+              mode === 'history'
+                ? 'bg-white text-[#292929] shadow-xs font-semibold'
+                : 'text-[#74716D] hover:text-[#292929]'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 text-[#BE9B57]" aria-hidden="true" />
+            <span>Draw Log ({historyDrawsCount})</span>
           </button>
           <button
             type="button"
             onClick={() => handleModeChange('ledger')}
-            className={`min-h-[38px] px-3 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation ${
+            className={`min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation ${
               mode === 'ledger'
                 ? 'bg-white text-[#292929] shadow-xs font-semibold'
                 : 'text-[#74716D] hover:text-[#292929]'
             }`}
           >
             <Link2 className="w-3.5 h-3.5 text-[#B52E45]" aria-hidden="true" />
-            <span>Synced from plan ({ledgerDraws})</span>
+            <span>Tipid ({ledgerDraws})</span>
           </button>
         </div>
       </div>
@@ -129,6 +150,10 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
               <span className="text-[11px] font-medium text-[#1D64C2]">
                 Synced from daily plan
               </span>
+            ) : mode === 'history' ? (
+              <span className="text-[11px] font-medium text-[#8C6D23]">
+                Synced from draw log
+              </span>
             ) : (
               <span className="text-[11px] font-normal text-[#98948D]">
                 Total pulls
@@ -141,14 +166,14 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
             inputMode="numeric"
             min="0"
             step="1"
-            value={inputs.draws}
+            value={mode === 'history' ? (historyDrawsCount > 0 ? historyDrawsCount : '') : inputs.draws}
             onChange={handleDrawsChange}
-            readOnly={mode === 'ledger'}
+            readOnly={mode === 'ledger' || mode === 'history'}
             placeholder="Enter your total draws"
             aria-label="Draws completed"
             aria-describedby="draws-help"
             className={`w-full px-3.5 py-3 sm:py-2.5 rounded-md border text-sm font-mono tabular-nums transition-colors min-h-[44px] ${
-              mode === 'ledger'
+              mode === 'ledger' || mode === 'history'
                 ? 'bg-[#F7F6F2] border-[#E9E6E0] text-[#74716D] cursor-not-allowed'
                 : 'bg-white border-[#E9E6E0] text-[#292929] focus:outline-none focus:border-[#B52E45] focus:ring-1 focus:ring-[#B52E45]'
             }`}
@@ -156,6 +181,8 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
           <p id="draws-help" className="mt-1 text-xs text-[#74716D]">
             {mode === 'ledger'
               ? `Derived from ${ledgerDraws} actual completed draws logged in your Tipid Plan.`
+              : mode === 'history'
+              ? `Derived from ${historyDrawsCount} individual draws recorded in your Draw History.`
               : 'Number of event draws pulled so far.'}
           </p>
           {mode === 'manual' && (
@@ -199,28 +226,37 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
             step="1"
             value={inputs.remnants}
             onChange={handleRemnantsChange}
+            readOnly={mode === 'history'}
             placeholder="Enter your current remnants"
             aria-label="Current Ashen Remnants"
             aria-describedby="remnants-help"
-            className="w-full px-3.5 py-3 sm:py-2.5 rounded-md border border-[#E9E6E0] bg-white text-[#292929] text-sm font-mono tabular-nums focus:outline-none focus:border-[#B52E45] focus:ring-1 focus:ring-[#B52E45] transition-colors min-h-[44px]"
+            className={`w-full px-3.5 py-3 sm:py-2.5 rounded-md border text-sm font-mono tabular-nums transition-colors min-h-[44px] ${
+              mode === 'history'
+                ? 'bg-[#F7F6F2] border-[#E9E6E0] text-[#74716D] cursor-not-allowed'
+                : 'bg-white border-[#E9E6E0] text-[#292929] focus:outline-none focus:border-[#B52E45] focus:ring-1 focus:ring-[#B52E45]'
+            }`}
           />
           <p id="remnants-help" className="mt-1 text-xs text-[#74716D]">
-            Current remnant tokens in your in-game bag.
+            {mode === 'history'
+              ? 'Tally includes all recorded pull tokens plus unlocked milestone bonuses.'
+              : 'Current remnant tokens in your in-game bag.'}
           </p>
-          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] text-[#98948D] mr-0.5">Quick add:</span>
-            {[3, 10, 20, 50, 80, 200, 400].map((amount) => (
-              <button
-                key={amount}
-                type="button"
-                onClick={() => addRemnants(amount)}
-                className="px-2 py-1 rounded bg-[#F7F6F2] hover:bg-[#EFECE6] border border-[#E9E6E0] text-xs font-mono font-medium text-[#292929] transition-colors cursor-pointer touch-manipulation"
-                title={`Add ${amount} remnants`}
-              >
-                +{amount}
-              </button>
-            ))}
-          </div>
+          {mode === 'manual' && (
+            <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+              <span className="text-[11px] text-[#98948D] mr-0.5">Quick add:</span>
+              {[3, 10, 20, 50, 80, 200, 400].map((amount) => (
+                <button
+                  key={amount}
+                  type="button"
+                  onClick={() => addRemnants(amount)}
+                  className="px-2 py-1 rounded bg-[#F7F6F2] hover:bg-[#EFECE6] border border-[#E9E6E0] text-xs font-mono font-medium text-[#292929] transition-colors cursor-pointer touch-manipulation"
+                  title={`Add ${amount} remnants`}
+                >
+                  +{amount}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { EventConfig, MilestoneConfig } from '../types/tracker';
+import { DuplicateConversionConfig, EventConfig, MilestoneConfig } from '../types/tracker';
 
 const MILESTONES: readonly MilestoneConfig[] = [
   { id: 'm15', threshold: 15, reward: 15 },
@@ -31,6 +31,23 @@ const CONSERVATIVE_BENCHMARK_RATE = Number(
 const SAFETY_BENCHMARK_RATE = Number(
   ((REQUIRED_REMNANTS - TOTAL_MILESTONE_BONUS) / SAFETY_DRAWS).toFixed(4)
 );
+
+export const DEFAULT_DUPLICATE_CONFIG: DuplicateConversionConfig = {
+  emote: 3,
+  basic: 10,
+  elite: 20,
+  special: 50,
+  epic: 80,
+  exclusive_epic: 200,
+  legend: 400,
+  other: 0,
+  unverified: {
+    epic: true,
+    exclusive_epic: true,
+    legend: true,
+    emote: true,
+  },
+};
 
 export const EVENT_CONFIG: EventConfig = {
   skinName: 'Kagura – Feast of Eternity',

@@ -13,7 +13,8 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     expect(result.verdict).toBe('red');
     expect(result.verdictTitle).toBe('Below 120-draw planning pace');
     expect(result.confidence).toBe('very_early');
-    expect(result.confidenceMessage).toContain("you've only completed 8 draws");
+    expect(result.confidenceTitle).toBe('Too Early to Tell');
+    expect(result.confidenceMessage).toBe('Not enough results to judge your average.');
   });
 
   it('TEST 2: 22 draws, 319 remnants, claimed milestone bonus 30 -> true average ~13.14, within 110–115 extended range', () => {
@@ -24,7 +25,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     expect(result.trueAverage).toBeCloseTo(13.1364, 2);
     expect(result.verdict).toBe('yellow');
     expect(result.verdictTitle).toBe('Within 110–115 extended range');
-    expect(result.confidence).toBe('limited');
+    expect(result.confidenceTitle).toBe('Too Early to Tell');
   });
 
   it('TEST 2B: 20 draws, 280 remnants -> true average 14.00, within 100–110 backup range', () => {
