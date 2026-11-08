@@ -217,6 +217,19 @@ export const App: React.FC = () => {
       <Header
         onResetClick={() => handleOpenReset('all')}
         hasDataToReset={hasDataToReset}
+        onExportBackup={handleExportBackup}
+        onImportBackup={(file) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const content = event.target?.result as string;
+            const imported = importFullBackupJSON(content);
+            if (imported) {
+              setCalcInputs(imported.calc);
+              setTipidState(imported.tipid);
+            }
+          };
+          reader.readAsText(file);
+        }}
       />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-8 py-4 sm:py-8 space-y-5 sm:space-y-6">

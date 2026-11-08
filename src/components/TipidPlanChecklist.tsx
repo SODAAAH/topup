@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronUp,
   Compass,
+  Calendar,
 } from 'lucide-react';
 import { ScheduleTask, ScheduleTaskStatus } from '../types/tracker';
 
@@ -29,10 +30,20 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
   const [collapseCompleted, setCollapseCompleted] = useState(false);
   const [flashTaskId, setFlashTaskId] = useState<string | null>(null);
   const pendingItemRef = useRef<HTMLDivElement | null>(null);
+  const todayItemRef = useRef<HTMLDivElement | null>(null);
+
+  const todayDateStr = useMemo(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }, []);
 
   const firstPendingId = useMemo(() => {
     return tasks.find((t) => t.status === 'pending')?.id;
   }, [tasks]);
+
+  const todayTask = useMemo(() => {
+    return tasks.find((t) => t.date === todayDateStr);
+  }, [tasks, todayDateStr]);
 
   useEffect(() => {
     if (pendingItemRef.current && firstPendingId && firstPendingId !== tasks[0]?.id) {
@@ -43,6 +54,12 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
   const handleJumpToPending = () => {
     if (pendingItemRef.current) {
       pendingItemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const handleJumpToToday = () => {
+    if (todayItemRef.current) {
+      todayItemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
 
@@ -241,6 +258,17 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
+          {todayTask && (
+            <button
+              type="button"
+              onClick={handleJumpToToday}
+              className="min-h-[36px] px-3 py-1.5 rounded-md border border-[#BE9B57] bg-[#FDFBF7] hover:bg-[#F9F4EB] text-xs font-semibold text-[#8C6D23] transition-colors flex items-center gap-1.5 cursor-pointer touch-manipulation"
+            >
+              <Calendar className="w-3.5 h-3.5 text-[#BE9B57]" aria-hidden="true" />
+              <span>Jump to today</span>
+            </button>
+          )}
+
           {firstPendingId && (
             <button
               type="button"
@@ -291,7 +319,10 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
           return (
             <div
               key={task.id}
-              ref={task.id === firstPendingId ? pendingItemRef : undefined}
+              ref={(el) => {
+                if (task.id === firstPendingId) pendingItemRef.current = el;
+                if (task.id === todayTask?.id) todayItemRef.current = el;
+              }}
               className={`p-4 sm:p-6 transition-all duration-300 ${
                 flashTaskId === task.id
                   ? 'bg-[#EDF7F1] ring-1 ring-[#C7E9D5]'
@@ -308,6 +339,11 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
                     <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-[#F7F6F2] border border-[#E9E6E0] text-[#292929]">
                       {task.displayDate}
                     </span>
+                    {task.id === todayTask?.id && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#BE9B57] text-white">
+                        Today
+                      </span>
+                    )}
                     <h3 className="text-sm font-bold text-[#292929]">
                       Day {task.dayNumber} — {task.title}
                     </h3>

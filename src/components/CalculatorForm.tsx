@@ -59,6 +59,17 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
     }
   };
 
+  const addDraws = (amount: number) => {
+    if (mode === 'ledger') return;
+    const current = typeof inputs.draws === 'number' ? inputs.draws : 0;
+    onChange({ ...inputs, draws: Math.max(0, current + amount) });
+  };
+
+  const addRemnants = (amount: number) => {
+    const current = typeof inputs.remnants === 'number' ? inputs.remnants : 0;
+    onChange({ ...inputs, remnants: Math.max(0, current + amount) });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onCalculate();
@@ -147,6 +158,27 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
               ? `Derived from ${ledgerDraws} actual completed draws logged in your Tipid Plan.`
               : 'Number of event draws pulled so far.'}
           </p>
+          {mode === 'manual' && (
+            <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+              <span className="text-[11px] text-[#98948D] mr-0.5">Quick add:</span>
+              <button
+                type="button"
+                onClick={() => addDraws(1)}
+                className="px-2.5 py-1 rounded bg-[#F7F6F2] hover:bg-[#EFECE6] border border-[#E9E6E0] text-xs font-mono font-medium text-[#292929] transition-colors cursor-pointer touch-manipulation"
+                title="Add 1 draw"
+              >
+                +1
+              </button>
+              <button
+                type="button"
+                onClick={() => addDraws(10)}
+                className="px-2.5 py-1 rounded bg-[#F7F6F2] hover:bg-[#EFECE6] border border-[#E9E6E0] text-xs font-mono font-medium text-[#292929] transition-colors cursor-pointer touch-manipulation"
+                title="Add 10 draws"
+              >
+                +10
+              </button>
+            </div>
+          )}
         </div>
 
         <div>
@@ -175,6 +207,20 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({
           <p id="remnants-help" className="mt-1 text-xs text-[#74716D]">
             Current remnant tokens in your in-game bag.
           </p>
+          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+            <span className="text-[11px] text-[#98948D] mr-0.5">Quick add:</span>
+            {[3, 10, 20, 50, 80, 200, 400].map((amount) => (
+              <button
+                key={amount}
+                type="button"
+                onClick={() => addRemnants(amount)}
+                className="px-2 py-1 rounded bg-[#F7F6F2] hover:bg-[#EFECE6] border border-[#E9E6E0] text-xs font-mono font-medium text-[#292929] transition-colors cursor-pointer touch-manipulation"
+                title={`Add ${amount} remnants`}
+              >
+                +{amount}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

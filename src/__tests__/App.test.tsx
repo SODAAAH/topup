@@ -146,4 +146,32 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     expect(remnantsInput.value).toBe('');
     expect(screen.getByText(/NOT ENOUGH DATA YET/i)).toBeInTheDocument();
   });
+
+  it('increments draws and remnants using quick-add duplicate chips', () => {
+    render(<App />);
+
+    const drawsInput = screen.getByPlaceholderText(/Enter your total draws/i) as HTMLInputElement;
+    const remnantsInput = screen.getByPlaceholderText(/Enter your current remnants/i) as HTMLInputElement;
+
+    const add1DrawBtn = screen.getByTitle('Add 1 draw');
+    const add10DrawBtn = screen.getByTitle('Add 10 draws');
+    const add3RemnantsBtn = screen.getByTitle('Add 3 remnants');
+    const add50RemnantsBtn = screen.getByTitle('Add 50 remnants');
+    const add200RemnantsBtn = screen.getByTitle('Add 200 remnants');
+
+    fireEvent.click(add1DrawBtn);
+    expect(drawsInput.value).toBe('1');
+
+    fireEvent.click(add10DrawBtn);
+    expect(drawsInput.value).toBe('11');
+
+    fireEvent.click(add3RemnantsBtn);
+    expect(remnantsInput.value).toBe('3');
+
+    fireEvent.click(add50RemnantsBtn);
+    expect(remnantsInput.value).toBe('53');
+
+    fireEvent.click(add200RemnantsBtn);
+    expect(remnantsInput.value).toBe('253');
+  });
 });
