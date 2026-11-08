@@ -19,11 +19,12 @@ This tracker isolates the true remnant average per draw by deducting claimed mil
 ### 1. Remnant Pacing Calculator
 * **True Rate Calculation**: Isolates draw-generated remnants from fixed milestone rewards:
   $$\text{True Average} = \frac{\text{Current Remnants} - \text{Claimed Milestones}}{\text{Completed Draws}}$$
-* **Three Strategic Benchmarks**:
+* **Four Strategic Benchmarks**:
   * **Optimistic Target (100 Draws)**: Requires $\ge 14.95$ remnants/draw.
   * **Tipid Backup Target (110 Draws)**: Requires $13.5909$ remnants/draw.
   * **Extended Target (115 Draws)**: Requires $13.00$ remnants/draw.
-  * **Below Extended Pace**: $< 13.00$ remnants/draw.
+  * **Extra Safety Contingency (120 Draws)**: Requires $12.4583$ remnants/draw (conservative planning reference, not an official pity limit).
+  * **Below 120-Draw Planning Pace**: $< 12.4583$ remnants/draw.
 * **Sample Size Reliability**: Flags early variance ($< 15$ draws) and rates sample confidence up to $\ge 50$ draws where all milestones unlock.
 * **Forecast Projections**: Calculates projected remnants at target milestones and remaining required remnant rates.
 * **Dual Input Modes**: Manual entry or one-click sync from the Daily Tipid Plan ledger.
