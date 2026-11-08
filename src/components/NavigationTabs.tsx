@@ -23,9 +23,9 @@ export const NavigationTabs: React.FC<NavigationTabsProps> = ({
   ];
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 border-b border-[#E9E6E0] pt-1">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 border-b border-[#E9E6E0] pt-1">
       <nav
-        className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 touch-manipulation"
+        className="flex items-center gap-1 sm:gap-2 overflow-x-auto flex-1 min-w-0 -mx-3.5 px-3.5 sm:mx-0 sm:px-0 touch-manipulation"
         aria-label="Main Navigation"
       >
         {tabs.map((tab) => {

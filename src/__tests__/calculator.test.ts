@@ -11,7 +11,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     expect(result.claimedMilestonesBonus).toBe(0);
     expect(result.trueAverage).toBe(8.125);
     expect(result.verdict).toBe('red');
-    expect(result.verdictTitle).toBe('BELOW EXTENDED PACE');
+    expect(result.verdictTitle).toBe('Below extended pace');
     expect(result.confidence).toBe('very_early');
     expect(result.confidenceMessage).toContain("you've only completed 8 draws");
   });
@@ -23,7 +23,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     expect(result.drawGeneratedRemnants).toBe(289);
     expect(result.trueAverage).toBeCloseTo(13.1364, 2);
     expect(result.verdict).toBe('yellow');
-    expect(result.verdictTitle).toBe('WITHIN 110–115 EXTENDED RANGE');
+    expect(result.verdictTitle).toBe('Within 110–115 extended range');
     expect(result.confidence).toBe('limited');
   });
 
@@ -34,7 +34,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     expect(result.drawGeneratedRemnants).toBe(280);
     expect(result.trueAverage).toBe(14.0);
     expect(result.verdict).toBe('blue');
-    expect(result.verdictTitle).toBe('WITHIN 100–110 BACKUP RANGE');
+    expect(result.verdictTitle).toBe('Within 100–110 backup range');
   });
 
   it('TEST 3: 50 draws with all 105 milestone rewards correctly subtracted', () => {
@@ -52,7 +52,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
 
     expect(result.trueAverage).toBeNull();
     expect(result.verdict).toBe('neutral');
-    expect(result.verdictTitle).toBe('NOT ENOUGH DATA YET.');
+    expect(result.verdictTitle).toBe('Not enough data yet');
     expect(result.isValid).toBe(false);
   });
 
@@ -60,7 +60,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     const result = calculateTrackerPace({ draws: 95, remnants: 1600 });
 
     expect(result.isGoalReached).toBe(true);
-    expect(result.goalReachedTitle).toBe('GOAL REACHED!');
+    expect(result.goalReachedTitle).toBe('Goal reached!');
     expect(result.remnantsRemaining).toBe(0);
     expect(result.progressPercentage).toBe(100);
     expect(result.estimatedAdditionalDraws).toBe(0);
@@ -83,7 +83,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     });
     expect(belowExtended.trueAverage).toBe(12.99);
     expect(belowExtended.verdict).toBe('red');
-    expect(belowExtended.verdictTitle).toBe('BELOW EXTENDED PACE');
+    expect(belowExtended.verdictTitle).toBe('Below extended pace');
 
     const exactExtended = calculateTrackerPace({
       draws: 100,
@@ -91,7 +91,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     });
     expect(exactExtended.trueAverage).toBe(13.0);
     expect(exactExtended.verdict).toBe('yellow');
-    expect(exactExtended.verdictTitle).toBe('WITHIN 110–115 EXTENDED RANGE');
+    expect(exactExtended.verdictTitle).toBe('Within 110–115 extended range');
 
     const exactBackup = calculateTrackerPace({
       draws: 10000,
@@ -99,7 +99,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     });
     expect(exactBackup.trueAverage).toBe(13.5909);
     expect(exactBackup.verdict).toBe('blue');
-    expect(exactBackup.verdictTitle).toBe('WITHIN 100–110 BACKUP RANGE');
+    expect(exactBackup.verdictTitle).toBe('Within 100–110 backup range');
 
     const highBackup = calculateTrackerPace({
       draws: 100,
@@ -114,7 +114,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     });
     expect(exactOptimistic.trueAverage).toBe(14.95);
     expect(exactOptimistic.verdict).toBe('green');
-    expect(exactOptimistic.verdictTitle).toBe("YOU'RE ABOVE PACE!");
+    expect(exactOptimistic.verdictTitle).toBe("You're above pace!");
   });
 
   it('TEST 8: unclaimed milestone rewards handling and future projection accounting', () => {

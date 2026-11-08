@@ -27,7 +27,7 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     fireEvent.change(drawsInput, { target: { value: '8' } });
     fireEvent.change(remnantsInput, { target: { value: '65' } });
 
-    expect(screen.getByText('BELOW EXTENDED PACE')).toBeInTheDocument();
+    expect(screen.getByText('Below extended pace')).toBeInTheDocument();
     expect(screen.getByText(/Very Early Sample/i)).toBeInTheDocument();
     expect(screen.getByText(/you've only completed 8 draws/i)).toBeInTheDocument();
   });
@@ -41,7 +41,7 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     fireEvent.change(drawsInput, { target: { value: '22' } });
     fireEvent.change(remnantsInput, { target: { value: '319' } });
 
-    expect(screen.getByText('WITHIN 110–115 EXTENDED RANGE')).toBeInTheDocument();
+    expect(screen.getByText('Within 110–115 extended range')).toBeInTheDocument();
     expect(screen.getByText(/Limited Sample/i)).toBeInTheDocument();
   });
 
@@ -54,7 +54,7 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     fireEvent.change(drawsInput, { target: { value: '20' } });
     fireEvent.change(remnantsInput, { target: { value: '329' } });
 
-    expect(screen.getByText("YOU'RE ABOVE PACE!")).toBeInTheDocument();
+    expect(screen.getByText("You're above pace!")).toBeInTheDocument();
   });
 
   it('navigates seamlessly between tabs and displays respective components', () => {

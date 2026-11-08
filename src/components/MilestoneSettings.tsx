@@ -57,6 +57,12 @@ export const MilestoneSettings: React.FC<MilestoneSettingsProps> = ({
 
       {isOpen && (
         <div className="p-5 border-t border-[#E9E6E0] space-y-4 bg-[#FBFBFA]">
+          {unclaimedUnlockedBonus > 0 && (
+            <div className="p-3 rounded-md bg-[#FEF9EE] border border-[#F6E2B6] text-xs text-[#A16207]">
+              <span>You have <strong className="font-semibold">{unclaimedUnlockedBonus} unclaimed bonus remnants</strong> from completed draws. If you have not claimed them in-game, keeping them unchecked prevents skewing your pull rate.</span>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#5C5853] bg-white p-3 rounded border border-[#E9E6E0]">
             <p>
               By default, unlocked milestones are assumed collected in your inventory.

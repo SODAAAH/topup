@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   AlertCircle,
   Check,
   RotateCcw,
   ChevronDown,
   ChevronUp,
+  Compass,
 } from 'lucide-react';
 import { ScheduleTask, ScheduleTaskStatus } from '../types/tracker';
 
@@ -25,6 +26,25 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
 }) => {
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
+  const [collapseCompleted, setCollapseCompleted] = useState(false);
+  const [flashTaskId, setFlashTaskId] = useState<string | null>(null);
+  const pendingItemRef = useRef<HTMLDivElement | null>(null);
+
+  const firstPendingId = useMemo(() => {
+    return tasks.find((t) => t.status === 'pending')?.id;
+  }, [tasks]);
+
+  useEffect(() => {
+    if (pendingItemRef.current && firstPendingId && firstPendingId !== tasks[0]?.id) {
+      pendingItemRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, []);
+
+  const handleJumpToPending = () => {
+    if (pendingItemRef.current) {
+      pendingItemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
 
   const toggleNotes = (id: string) => {
     setExpandedNotes((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -32,6 +52,8 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
 
   const handleStatusChange = (task: ScheduleTask, newStatus: ScheduleTaskStatus) => {
     if (newStatus === 'completed' && task.status !== 'completed') {
+      setFlashTaskId(task.id);
+      setTimeout(() => setFlashTaskId(null), 700);
       onUpdateTask(task.id, {
         status: newStatus,
         actualDraws: task.actualDraws > 0 ? task.actualDraws : task.plannedDraws,
@@ -65,6 +87,15 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
     if (filter === 'pending') return t.status === 'pending';
     return true;
   });
+
+  const visibleTasks = useMemo(() => {
+    return filteredTasks.filter((t) => {
+      if (collapseCompleted && filter === 'all') {
+        return t.status !== 'completed' && t.status !== 'modified';
+      }
+      return true;
+    });
+  }, [filteredTasks, collapseCompleted, filter]);
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -172,7 +203,7 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 flex-wrap">
         <div className="w-full sm:w-auto grid grid-cols-3 sm:inline-flex rounded-md bg-[#F4F2EC] p-0.5 border border-[#E9E6E0] text-xs">
           <button
             type="button"
@@ -209,13 +240,50 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
           </button>
         </div>
 
-        <span className="text-[11px] text-[#98948D]">
-          Check off tasks as completed in-game.
-        </span>
+        <div className="flex items-center gap-2 flex-wrap">
+          {firstPendingId && (
+            <button
+              type="button"
+              onClick={handleJumpToPending}
+              className="min-h-[36px] px-3 py-1.5 rounded-md border border-[#E9E6E0] bg-white hover:bg-[#F7F6F2] text-xs font-medium text-[#5C5853] hover:text-[#292929] transition-colors flex items-center gap-1.5 cursor-pointer touch-manipulation"
+            >
+              <Compass className="w-3.5 h-3.5 text-[#B52E45]" aria-hidden="true" />
+              <span>Jump to next task</span>
+            </button>
+          )}
+
+          {completedCount > 0 && filter === 'all' && (
+            <button
+              type="button"
+              onClick={() => setCollapseCompleted(!collapseCompleted)}
+              className="min-h-[36px] px-3 py-1.5 rounded-md border border-[#E9E6E0] bg-white hover:bg-[#F7F6F2] text-xs font-medium text-[#74716D] hover:text-[#292929] transition-colors flex items-center gap-1.5 cursor-pointer touch-manipulation"
+            >
+              <span>{collapseCompleted ? 'Show completed' : `Collapse done (${completedCount})`}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="bg-white border border-[#E9E6E0] rounded-lg divide-y divide-[#E9E6E0] shadow-xs">
-        {filteredTasks.map((task) => {
+        {collapseCompleted && filter === 'all' && completedCount > 0 && (
+          <div className="p-4 bg-[#FBFBFA] border-b border-[#E9E6E0] flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-[#1E7E4E]" aria-hidden="true" />
+              <span className="text-[#5C5853]">
+                <strong className="text-[#292929]">{completedCount} completed days</strong> collapsed ({totalActualDraws} draws logged)
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCollapseCompleted(false)}
+              className="text-[#B52E45] font-semibold hover:underline cursor-pointer"
+            >
+              Show all
+            </button>
+          </div>
+        )}
+
+        {visibleTasks.map((task) => {
           const isDone = task.status === 'completed' || task.status === 'modified';
           const isSkipped = task.status === 'skipped';
           const hasNotes = Boolean(task.notes);
@@ -223,8 +291,11 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
           return (
             <div
               key={task.id}
-              className={`p-4 sm:p-6 transition-colors ${
-                isDone
+              ref={task.id === firstPendingId ? pendingItemRef : undefined}
+              className={`p-4 sm:p-6 transition-all duration-300 ${
+                flashTaskId === task.id
+                  ? 'bg-[#EDF7F1] ring-1 ring-[#C7E9D5]'
+                  : isDone
                   ? 'bg-white'
                   : isSkipped
                   ? 'bg-[#FBFBFA] opacity-60'

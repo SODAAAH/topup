@@ -28,8 +28,24 @@ export const ProjectionComparison: React.FC<ProjectionComparisonProps> = ({ resu
         ? 'bg-[#EEF5FC] text-[#1D64C2] border-[#C6DFFA]'
         : 'bg-[#FEF9EE] text-[#A16207] border-[#F6E2B6]';
 
+    const isMatched =
+      (result.verdict === 'green' && accentStyle === 'optimistic') ||
+      (result.verdict === 'blue' && accentStyle === 'backup') ||
+      ((result.verdict === 'yellow' || result.verdict === 'red') && accentStyle === 'extended');
+
     return (
-      <div className="bg-white border border-[#E9E6E0] rounded-lg p-5 flex flex-col justify-between shadow-xs">
+      <div
+        className={`bg-white rounded-lg p-5 flex flex-col justify-between transition-all relative ${
+          isMatched
+            ? 'border-2 border-[#B52E45] shadow-sm'
+            : 'border border-[#E9E6E0] shadow-xs'
+        }`}
+      >
+        {isMatched && trueAverage !== null && (
+          <span className="absolute -top-2.5 left-4 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#B52E45] text-white tracking-normal">
+            Your current track
+          </span>
+        )}
         <div>
           <div className="flex items-center justify-between pb-3 border-b border-[#E9E6E0]">
             <div>

@@ -145,10 +145,10 @@ export function calculateTrackerPace(
       drawGeneratedRemnants: Math.max(0, currentRemnants - claimedMilestonesBonus),
       trueAverage: null,
       verdict: 'neutral',
-      verdictTitle: 'NOT ENOUGH DATA YET.',
+      verdictTitle: 'Not enough data yet',
       verdictMessage: missingInfo,
       isGoalReached,
-      goalReachedTitle: 'GOAL REACHED!',
+      goalReachedTitle: 'Goal reached!',
       goalReachedMessage: `You have reached the required ${config.requiredRemnants.toLocaleString()} ${config.currencyName} goal.`,
       confidence: 'none',
       confidenceTitle: 'No Sample',
@@ -195,22 +195,22 @@ export function calculateTrackerPace(
 
   if (trueAverage >= config.optimisticBenchmarkRate) {
     verdict = 'green';
-    verdictTitle = "YOU'RE ABOVE PACE!";
+    verdictTitle = "You're above pace!";
     verdictMessage =
       "Your remnant average is higher than the 100-draw benchmark. At your current average, you're trending toward reaching the 1,600-remnant goal in approximately 100 draws or fewer.";
   } else if (trueAverage >= config.backupBenchmarkRate) {
     verdict = 'blue';
-    verdictTitle = 'WITHIN 100–110 BACKUP RANGE';
+    verdictTitle = 'Within 100–110 backup range';
     verdictMessage =
       "Your average is within the estimated 100–110 draw backup range. You're tracking comfortably within the primary backup plan.";
   } else if (trueAverage >= config.conservativeBenchmarkRate) {
     verdict = 'yellow';
-    verdictTitle = 'WITHIN 110–115 EXTENDED RANGE';
+    verdictTitle = 'Within 110–115 extended range';
     verdictMessage =
       'Your average is below the primary backup pace but still within the optional 115-draw extended planning target.';
   } else {
     verdict = 'red';
-    verdictTitle = 'BELOW EXTENDED PACE';
+    verdictTitle = 'Below extended pace';
     verdictMessage =
       "Your current average is below all three planning benchmarks (100, 110, and 115 draws). You'll need a better average in your remaining draws to finish within these ranges.";
   }
@@ -310,7 +310,7 @@ export function calculateTrackerPace(
     verdictTitle,
     verdictMessage,
     isGoalReached,
-    goalReachedTitle: 'GOAL REACHED!',
+    goalReachedTitle: 'Goal reached!',
     goalReachedMessage: `You have reached the required ${config.requiredRemnants.toLocaleString()} ${config.currencyName} goal. You can claim ${config.skinName} now!`,
     confidence,
     confidenceTitle,

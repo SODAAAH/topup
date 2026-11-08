@@ -1,5 +1,5 @@
-import React from 'react';
-import { TrendingUp, Target, AlertCircle, HelpCircle, Trophy, Compass } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, Target, AlertCircle, HelpCircle, Trophy, Compass, Copy, Check } from 'lucide-react';
 import { VerdictType } from '../types/tracker';
 
 interface VerdictBadgeProps {
@@ -10,6 +10,8 @@ interface VerdictBadgeProps {
   isGoalReached: boolean;
   goalReachedTitle: string;
   goalReachedMessage: string;
+  draws?: number;
+  currentRemnants?: number;
 }
 
 export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
@@ -20,7 +22,30 @@ export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
   isGoalReached,
   goalReachedTitle,
   goalReachedMessage,
+  draws = 0,
+  currentRemnants = 0,
 }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopySummary = async () => {
+    if (trueAverage === null) return;
+    const text = `Kagura Feast of Eternity: ${draws} draws • ${currentRemnants} remnants • ${trueAverage.toFixed(2)}/draw (${title})`;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const getVerdictTheme = () => {
     switch (verdict) {
       case 'green':
@@ -71,7 +96,7 @@ export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
   const IconComponent = theme.icon;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" aria-live="polite">
       {isGoalReached && (
         <div className="p-5 rounded-lg bg-[#FBF8F0] border border-[#EFE2C6] flex items-start sm:items-center gap-3.5">
           <div className="p-2 rounded bg-white border border-[#EFE2C6] shrink-0 text-[#BE9B57]">
@@ -79,7 +104,7 @@ export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#9D7E3F]">
+              <span className="text-xs font-semibold text-[#9D7E3F]">
                 Achievement
               </span>
               <h4 className="text-sm font-bold text-[#292929]">
@@ -117,6 +142,28 @@ export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
               </p>
             </div>
           </div>
+
+          {trueAverage !== null && (
+            <button
+              type="button"
+              onClick={handleCopySummary}
+              className="self-start sm:self-center min-h-[36px] px-3 py-1.5 rounded-md bg-white border border-[#E9E6E0] hover:bg-[#F7F6F2] text-xs font-medium text-[#5C5853] hover:text-[#292929] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer touch-manipulation"
+              title="Copy pacing result summary"
+              aria-label="Copy pacing result summary"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-[#1E7E4E]" aria-hidden="true" />
+                  <span className="text-[#1E7E4E]">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-[#98948D]" aria-hidden="true" />
+                  <span>Copy summary</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

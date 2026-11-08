@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Header } from './components/Header';
 import { NavigationTabs } from './components/NavigationTabs';
+import { GoalProgressBar } from './components/GoalProgressBar';
 import { CalculatorForm } from './components/CalculatorForm';
 import { MilestoneSettings } from './components/MilestoneSettings';
 import { VerdictBadge } from './components/VerdictBadge';
@@ -218,6 +219,8 @@ export const App: React.FC = () => {
       <Header
         onResetClick={() => handleOpenReset('all')}
         hasDataToReset={hasDataToReset}
+        estimatedAdditionalDraws={calculationResult.estimatedAdditionalDraws}
+        isGoalReached={calculationResult.isGoalReached}
       />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-8 py-4 sm:py-8 space-y-5 sm:space-y-6">
@@ -259,6 +262,13 @@ export const App: React.FC = () => {
               </p>
             </section>
 
+            <GoalProgressBar
+              currentRemnants={calculationResult.currentRemnants}
+              remnantsRemaining={calculationResult.remnantsRemaining}
+              progressPercentage={calculationResult.progressPercentage}
+              isGoalReached={calculationResult.isGoalReached}
+            />
+
             <section aria-labelledby="calculator-form-heading">
               <h3 id="calculator-form-heading" className="sr-only">Calculator Inputs</h3>
               <CalculatorForm
@@ -292,6 +302,8 @@ export const App: React.FC = () => {
                 isGoalReached={calculationResult.isGoalReached}
                 goalReachedTitle={calculationResult.goalReachedTitle}
                 goalReachedMessage={calculationResult.goalReachedMessage}
+                draws={calculationResult.draws}
+                currentRemnants={calculationResult.currentRemnants}
               />
 
               <ConfidenceIndicator

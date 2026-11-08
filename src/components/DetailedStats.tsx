@@ -193,7 +193,11 @@ export const DetailedStats: React.FC<DetailedStatsProps> = ({ result }) => {
           <span className="font-semibold text-[#292929] block">Projected finishing draws</span>
           <div className="flex items-center sm:justify-end gap-2 text-sm font-mono flex-wrap">
             <span className="font-bold text-[#292929] text-base">
-              {result.estimatedTotalDraws !== null ? `~${result.estimatedTotalDraws} draws` : '—'}
+              {result.estimatedTotalDraws !== null
+                ? `~${result.estimatedTotalDraws} draws`
+                : result.trueAverage !== null && result.trueAverage > 0 && !result.isGoalReached
+                ? '>500 draws'
+                : '—'}
             </span>
             {result.estimatedAdditionalDraws !== null && result.estimatedAdditionalDraws > 0 && (
               <span className="text-xs text-[#74716D]">
@@ -203,7 +207,9 @@ export const DetailedStats: React.FC<DetailedStatsProps> = ({ result }) => {
             {getProjectionPaceBadge()}
           </div>
           <p className="text-[11px] text-[#98948D]">
-            Estimated total draws required if historical true average persists.
+            {result.trueAverage !== null && result.trueAverage > 0 && result.estimatedTotalDraws === null && !result.isGoalReached
+              ? 'Projection exceeds 500 draws at your current remnant rate.'
+              : 'Estimated total draws required if historical true average persists.'}
           </p>
         </div>
       </div>
