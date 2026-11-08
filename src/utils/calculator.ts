@@ -129,6 +129,13 @@ export function calculateTrackerPace(
       null
     );
 
+    const safetyComp = buildBenchmarkComparison(
+      'Extra Safety Target',
+      config.safetyDraws,
+      config.safetyBenchmarkRate,
+      null
+    );
+
     const remnantsRemaining = Math.max(0, config.requiredRemnants - currentRemnants);
     const progressPercentage = Math.min(
       100,
@@ -158,12 +165,14 @@ export function calculateTrackerPace(
       diffFromOptimisticBenchmark: null,
       diffFromBackupBenchmark: null,
       diffFromConservativeBenchmark: null,
+      diffFromSafetyBenchmark: null,
       estimatedTotalDraws: null,
       estimatedAdditionalDraws: null,
       estimateCategory: isGoalReached ? 'goal_reached' : 'unavailable',
       optimisticComparison: optimisticComp,
       backupComparison: backupComp,
       conservativeComparison: conservativeComp,
+      safetyComparison: safetyComp,
       milestones: milestoneStatuses,
       isValid: false,
       validationError: missingInfo,
@@ -181,6 +190,9 @@ export function calculateTrackerPace(
   );
   const diffFromConservativeBenchmark = Number(
     (trueAverage - config.conservativeBenchmarkRate).toFixed(2)
+  );
+  const diffFromSafetyBenchmark = Number(
+    (trueAverage - config.safetyBenchmarkRate).toFixed(2)
   );
 
   const remnantsRemaining = Math.max(0, config.requiredRemnants - currentRemnants);
@@ -208,11 +220,16 @@ export function calculateTrackerPace(
     verdictTitle = 'Within 110–115 extended range';
     verdictMessage =
       'Your average is below the primary backup pace but still within the optional 115-draw extended planning target.';
+  } else if (trueAverage >= config.safetyBenchmarkRate) {
+    verdict = 'orange';
+    verdictTitle = 'Within 115–120 planning range';
+    verdictMessage =
+      'Your average is below the 115-draw pace but tracking within the 120-draw extra safety contingency scenario.';
   } else {
     verdict = 'red';
-    verdictTitle = 'Below extended pace';
+    verdictTitle = 'Below 120-draw planning pace';
     verdictMessage =
-      "Your current average is below all three planning benchmarks (100, 110, and 115 draws). You'll need a better average in your remaining draws to finish within these ranges.";
+      "Your current average is below the 120-draw planning pace. You can still reach the 1,600 goal with better drop rates in your remaining draws.";
   }
 
   let confidence: ConfidenceLevel = 'informative';
@@ -224,7 +241,7 @@ export function calculateTrackerPace(
     confidenceTitle = 'Very Early Sample';
     if (verdict === 'red') {
       confidenceMessage = `Your current average is below pace, but you've only completed ${draws} draw${draws === 1 ? '' : 's'}. Early results can fluctuate considerably. This is not a reliable prediction of your final outcome yet.`;
-    } else if (verdict === 'yellow' || verdict === 'blue' || verdict === 'green') {
+    } else if (verdict === 'orange' || verdict === 'yellow' || verdict === 'blue' || verdict === 'green') {
       confidenceMessage = `You've only completed ${draws} draw${draws === 1 ? '' : 's'}. Early drop rates fluctuate significantly with RNG. Continue tracking as you draw.`;
     } else {
       confidenceMessage = `Completed ${draws} draw${draws === 1 ? '' : 's'}. Sample size is very small.`;
@@ -270,8 +287,10 @@ export function calculateTrackerPace(
         estimateCategory = 'between_100_110';
       } else if (estimatedTotalDraws <= config.conservativeDraws) {
         estimateCategory = 'between_110_115';
+      } else if (estimatedTotalDraws <= config.safetyDraws) {
+        estimateCategory = 'between_115_120';
       } else {
-        estimateCategory = 'above_115';
+        estimateCategory = 'above_120';
       }
     }
   }
@@ -294,6 +313,13 @@ export function calculateTrackerPace(
     'Extended Target',
     config.conservativeDraws,
     config.conservativeBenchmarkRate,
+    trueAverage
+  );
+
+  const safetyComparison = buildBenchmarkComparison(
+    'Extra Safety Target',
+    config.safetyDraws,
+    config.safetyBenchmarkRate,
     trueAverage
   );
 
@@ -320,12 +346,14 @@ export function calculateTrackerPace(
     diffFromOptimisticBenchmark,
     diffFromBackupBenchmark,
     diffFromConservativeBenchmark,
+    diffFromSafetyBenchmark,
     estimatedTotalDraws,
     estimatedAdditionalDraws,
     estimateCategory,
     optimisticComparison,
     backupComparison,
     conservativeComparison,
+    safetyComparison,
     milestones: milestoneStatuses,
     isValid: true,
   };

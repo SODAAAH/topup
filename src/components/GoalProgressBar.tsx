@@ -72,3 +72,4 @@ export const GoalProgressBar: React.FC<GoalProgressBarProps> = ({
     </div>
   );
 };
+

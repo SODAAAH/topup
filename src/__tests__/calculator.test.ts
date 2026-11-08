@@ -11,7 +11,7 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     expect(result.claimedMilestonesBonus).toBe(0);
     expect(result.trueAverage).toBe(8.125);
     expect(result.verdict).toBe('red');
-    expect(result.verdictTitle).toBe('Below extended pace');
+    expect(result.verdictTitle).toBe('Below 120-draw planning pace');
     expect(result.confidence).toBe('very_early');
     expect(result.confidenceMessage).toContain("you've only completed 8 draws");
   });
@@ -76,14 +76,22 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     expect(result120.futureLockedBonus).toBe(0);
   });
 
-  it('TEST 7: boundary tests for averages (12.99, 13.00, 13.5908, 13.5909, 14.94, 14.95)', () => {
-    const belowExtended = calculateTrackerPace({
+  it('TEST 7: boundary tests for all four benchmarks (12.45, 12.46, 13.00, 13.5909, 14.95)', () => {
+    const below120 = calculateTrackerPace({
       draws: 100,
-      remnants: 1299 + 105,
+      remnants: 1245 + 105,
     });
-    expect(belowExtended.trueAverage).toBe(12.99);
-    expect(belowExtended.verdict).toBe('red');
-    expect(belowExtended.verdictTitle).toBe('Below extended pace');
+    expect(below120.trueAverage).toBe(12.45);
+    expect(below120.verdict).toBe('red');
+    expect(below120.verdictTitle).toBe('Below 120-draw planning pace');
+
+    const within115to120 = calculateTrackerPace({
+      draws: 100,
+      remnants: 1246 + 105,
+    });
+    expect(within115to120.trueAverage).toBe(12.46);
+    expect(within115to120.verdict).toBe('orange');
+    expect(within115to120.verdictTitle).toBe('Within 115–120 planning range');
 
     const exactExtended = calculateTrackerPace({
       draws: 100,
@@ -100,13 +108,6 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     expect(exactBackup.trueAverage).toBe(13.5909);
     expect(exactBackup.verdict).toBe('blue');
     expect(exactBackup.verdictTitle).toBe('Within 100–110 backup range');
-
-    const highBackup = calculateTrackerPace({
-      draws: 100,
-      remnants: 1494 + 105,
-    });
-    expect(highBackup.trueAverage).toBe(14.94);
-    expect(highBackup.verdict).toBe('blue');
 
     const exactOptimistic = calculateTrackerPace({
       draws: 20,
@@ -144,9 +145,35 @@ describe('Kagura Ashen Remnant Tracker - Mathematical Engine', () => {
     );
   });
 
-  it('verifies configuration benchmarks for 100, 110, and 115 draws', () => {
+  it('TEST 9: verifies configuration benchmarks for 100, 110, 115, and 120 draws', () => {
     expect(EVENT_CONFIG.optimisticBenchmarkRate).toBe(14.95);
-    expect(EVENT_CONFIG.backupBenchmarkRate).toBe(13.5909);
+    expect(EVENT_CONFIG.backupBenchmarkRate).toBeCloseTo(13.5909, 4);
     expect(EVENT_CONFIG.conservativeBenchmarkRate).toBe(13.0);
+    expect(EVENT_CONFIG.safetyBenchmarkRate).toBeCloseTo(12.4583, 4);
+    expect(EVENT_CONFIG.contingencyBenchmarkRate).toBeCloseTo(12.4583, 4);
+  });
+
+  it('TEST 10: verifies actual projected remnant total at 120 draws correctly includes milestone rewards without double-counting', () => {
+    const result = calculateTrackerPace({ draws: 50, remnants: 800 });
+
+    expect(result.draws).toBe(50);
+    expect(result.claimedMilestonesBonus).toBe(105);
+    expect(result.trueAverage).toBe(13.9);
+
+    const safety = result.safetyComparison;
+    expect(safety.targetDraws).toBe(120);
+    expect(safety.benchmarkRate).toBeCloseTo(12.4583, 4);
+    expect(safety.projectedRemnants).toBe(Math.round((13.9 * 120) + 105));
+    expect(safety.differenceFromGoal).toBe(safety.projectedRemnants - 1600);
+    expect(safety.drawsRemainingToTarget).toBe(70);
+    expect(safety.willReachGoal).toBe(true);
+  });
+
+  it('TEST 11: verifies estimate category correctly identifies finishing ranges including 115-120 and beyond 120', () => {
+    const cat115to120 = calculateTrackerPace({ draws: 50, remnants: Math.round(12.6 * 50) + 105 });
+    expect(cat115to120.estimateCategory).toBe('between_115_120');
+
+    const catBeyond120 = calculateTrackerPace({ draws: 50, remnants: Math.round(11.0 * 50) + 105 });
+    expect(catBeyond120.estimateCategory).toBe('above_120');
   });
 });

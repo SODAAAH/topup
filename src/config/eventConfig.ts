@@ -12,6 +12,7 @@ const REQUIRED_REMNANTS = 1600;
 const OPTIMISTIC_DRAWS = 100;
 const BACKUP_DRAWS = 110;
 const CONSERVATIVE_DRAWS = 115;
+const SAFETY_DRAWS = 120;
 
 const TOTAL_MILESTONE_BONUS = MILESTONES.reduce((sum, item) => sum + item.reward, 0);
 
@@ -19,10 +20,16 @@ const OPTIMISTIC_BENCHMARK_RATE = Number(
   ((REQUIRED_REMNANTS - TOTAL_MILESTONE_BONUS) / OPTIMISTIC_DRAWS).toFixed(4)
 );
 
-const BACKUP_BENCHMARK_RATE = 13.5909;
+const BACKUP_BENCHMARK_RATE = Number(
+  ((REQUIRED_REMNANTS - TOTAL_MILESTONE_BONUS) / BACKUP_DRAWS).toFixed(4)
+);
 
 const CONSERVATIVE_BENCHMARK_RATE = Number(
   ((REQUIRED_REMNANTS - TOTAL_MILESTONE_BONUS) / CONSERVATIVE_DRAWS).toFixed(4)
+);
+
+const SAFETY_BENCHMARK_RATE = Number(
+  ((REQUIRED_REMNANTS - TOTAL_MILESTONE_BONUS) / SAFETY_DRAWS).toFixed(4)
 );
 
 export const EVENT_CONFIG: EventConfig = {
@@ -34,12 +41,16 @@ export const EVENT_CONFIG: EventConfig = {
   backupDraws: BACKUP_DRAWS,
   extendedDraws: CONSERVATIVE_DRAWS,
   conservativeDraws: CONSERVATIVE_DRAWS,
+  safetyDraws: SAFETY_DRAWS,
+  contingencyDraws: SAFETY_DRAWS,
   milestones: MILESTONES,
   totalMilestoneBonus: TOTAL_MILESTONE_BONUS,
   optimisticBenchmarkRate: OPTIMISTIC_BENCHMARK_RATE,
   backupBenchmarkRate: BACKUP_BENCHMARK_RATE,
   extendedBenchmarkRate: CONSERVATIVE_BENCHMARK_RATE,
   conservativeBenchmarkRate: CONSERVATIVE_BENCHMARK_RATE,
+  safetyBenchmarkRate: SAFETY_BENCHMARK_RATE,
+  contingencyBenchmarkRate: SAFETY_BENCHMARK_RATE,
 };
 
 export function getMilestoneBonusAtDraws(draws: number, milestones = MILESTONES): number {

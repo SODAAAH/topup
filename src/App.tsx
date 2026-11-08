@@ -372,7 +372,7 @@ export const App: React.FC = () => {
             <span>Kagura Ashen Remnant Tracker and Tipid Suite • Feast of Eternity event companion</span>
           </div>
           <div className="text-[#74716D] text-center sm:text-right">
-            <span>Benchmarks: 100 draws (14.95) • 110 draws (13.5909) • 115 draws (13.00)</span>
+            <span>Benchmarks: 100 draws (14.95) • 110 draws (13.5909) • 115 draws (13.00) • 120 draws (12.4583)</span>
           </div>
         </div>
       </footer>

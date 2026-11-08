@@ -18,7 +18,7 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     expect(screen.getByText(/NOT ENOUGH DATA YET/i)).toBeInTheDocument();
   });
 
-  it('calculates below extended pace with early draw sample warning for 8 draws and 65 remnants', () => {
+  it('calculates below 120-draw planning pace with early draw sample warning for 8 draws and 65 remnants', () => {
     render(<App />);
 
     const drawsInput = screen.getByPlaceholderText(/Enter your total draws/i);
@@ -27,7 +27,7 @@ describe('Kagura Ashen Remnant Tracker - Integrated App Tests', () => {
     fireEvent.change(drawsInput, { target: { value: '8' } });
     fireEvent.change(remnantsInput, { target: { value: '65' } });
 
-    expect(screen.getByText('Below extended pace')).toBeInTheDocument();
+    expect(screen.getByText('Below 120-draw planning pace')).toBeInTheDocument();
     expect(screen.getByText(/Very Early Sample/i)).toBeInTheDocument();
     expect(screen.getByText(/you've only completed 8 draws/i)).toBeInTheDocument();
   });

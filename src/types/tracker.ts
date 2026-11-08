@@ -13,12 +13,16 @@ export interface EventConfig {
   backupDraws: number;
   extendedDraws: number;
   conservativeDraws: number;
+  safetyDraws: number;
+  contingencyDraws: number;
   milestones: readonly MilestoneConfig[];
   totalMilestoneBonus: number;
   optimisticBenchmarkRate: number;
   backupBenchmarkRate: number;
   extendedBenchmarkRate: number;
   conservativeBenchmarkRate: number;
+  safetyBenchmarkRate: number;
+  contingencyBenchmarkRate: number;
 }
 
 export type DrawSourceMode = 'manual' | 'ledger';
@@ -30,7 +34,7 @@ export interface TrackerInputs {
   drawSourceMode?: DrawSourceMode;
 }
 
-export type VerdictType = 'green' | 'blue' | 'yellow' | 'red' | 'neutral';
+export type VerdictType = 'green' | 'blue' | 'yellow' | 'orange' | 'red' | 'neutral';
 
 export type ConfidenceLevel = 'none' | 'very_early' | 'limited' | 'informative';
 
@@ -38,6 +42,8 @@ export type EstimateCategory =
   | 'below_100'
   | 'between_100_110'
   | 'between_110_115'
+  | 'between_115_120'
+  | 'above_120'
   | 'above_115'
   | 'goal_reached'
   | 'unavailable';
@@ -84,12 +90,14 @@ export interface CalculationResult {
   diffFromOptimisticBenchmark: number | null;
   diffFromBackupBenchmark: number | null;
   diffFromConservativeBenchmark: number | null;
+  diffFromSafetyBenchmark: number | null;
   estimatedTotalDraws: number | null;
   estimatedAdditionalDraws: number | null;
   estimateCategory: EstimateCategory;
   optimisticComparison: BenchmarkComparison;
   backupComparison: BenchmarkComparison;
   conservativeComparison: BenchmarkComparison;
+  safetyComparison: BenchmarkComparison;
   milestones: MilestoneStatus[];
   isValid: boolean;
   validationError?: string;

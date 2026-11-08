@@ -87,9 +87,13 @@ export const PlanVsActualDashboard: React.FC<PlanVsActualDashboardProps> = ({
       narrativeInsights.push(
         `Your average of ${calculationResult.trueAverage.toFixed(2)} is in the 110–115 extended target cushion.`
       );
+    } else if (calculationResult.verdict === 'orange') {
+      narrativeInsights.push(
+        `Your average of ${calculationResult.trueAverage.toFixed(2)} is within the 115–120 extra safety range.`
+      );
     } else if (calculationResult.verdict === 'red') {
       narrativeInsights.push(
-        `Your remnant average of ${calculationResult.trueAverage.toFixed(2)} is below extended planning pace.`
+        `Your remnant average of ${calculationResult.trueAverage.toFixed(2)} is below the 120-draw planning pace. You can still reach the goal with higher token drops in upcoming draws.`
       );
     }
   }

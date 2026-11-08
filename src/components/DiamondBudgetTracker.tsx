@@ -43,6 +43,14 @@ export const DiamondBudgetTracker: React.FC<DiamondBudgetTrackerProps> = ({
   const plannedBlue110Baseline = plannedBlue100Baseline + 500;
   const plannedBlue110Actual = plannedBlue100ActualNov24 + extra10DrawsCost;
 
+  const extra15DrawsCost = extraCostPerDraw * 15;
+  const plannedBlue115Baseline = plannedBlue100Baseline + 750;
+  const plannedBlue115Actual = plannedBlue100ActualNov24 + extra15DrawsCost;
+
+  const extra20DrawsCost = extraCostPerDraw * 20;
+  const plannedBlue120Baseline = plannedBlue100Baseline + 1000;
+  const plannedBlue120Actual = plannedBlue100ActualNov24 + extra20DrawsCost;
+
   const startingPromo = state.startingPromoDiamonds || 0;
   const promoReceived = 800;
   const totalPromoAvailable = startingPromo + promoReceived;
@@ -241,10 +249,10 @@ export const DiamondBudgetTracker: React.FC<DiamondBudgetTrackerProps> = ({
           <div>
             <h3 className="text-sm font-semibold text-[#292929] flex items-center gap-2">
               <Sliders className="w-4 h-4 text-[#BE9B57]" aria-hidden="true" />
-              100-draw vs 110-draw spending comparison
+              Multi-scenario diamond expenditure forecast
             </h3>
             <p className="text-xs text-[#74716D] mt-0.5">
-              Evaluates additional diamond requirements if the 110-draw backup target is utilized.
+              Evaluates diamond requirements across 100, 110, 115, and 120 draws using configurable draw prices.
             </p>
           </div>
 
@@ -267,7 +275,7 @@ export const DiamondBudgetTracker: React.FC<DiamondBudgetTrackerProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="p-4 rounded-md bg-[#F7F6F2] border border-[#E9E6E0]">
             <span className="text-xs font-semibold text-[#1E5D38] block mb-1">
               100 Draws (Optimistic)
@@ -283,7 +291,7 @@ export const DiamondBudgetTracker: React.FC<DiamondBudgetTrackerProps> = ({
           </div>
 
           <div className="p-4 rounded-md bg-[#F7F6F2] border border-[#E9E6E0]">
-            <span className="text-xs font-semibold text-[#292929] block mb-1">
+            <span className="text-xs font-semibold text-[#1D64C2] block mb-1">
               110 Draws (Tipid Backup)
             </span>
             <div className="text-xl sm:text-2xl font-bold text-[#292929] tabular-nums">
@@ -292,8 +300,38 @@ export const DiamondBudgetTracker: React.FC<DiamondBudgetTrackerProps> = ({
             </div>
             <div className="mt-2 text-xs text-[#5C5853] space-y-1">
               <p>Possible range: <strong className="font-semibold text-[#292929] tabular-nums">2,848–2,887 Dia</strong></p>
-              <p className="text-[#74716D]">+500 Blue Diamonds (+10 draws @ {extraCostPerDraw} Dia/draw) over baseline.</p>
-              <p className="text-[#74716D]">Adjusted with Nov 24 setting: <strong className="font-semibold text-[#292929] tabular-nums">{plannedBlue110Actual} Dia</strong></p>
+              <p className="text-[#74716D]">+10 draws (@ {extraCostPerDraw} Dia/draw).</p>
+              <p className="text-[#74716D]">Adjusted: <strong className="font-semibold text-[#292929] tabular-nums">{plannedBlue110Actual} Dia</strong></p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-md bg-[#F7F6F2] border border-[#E9E6E0]">
+            <span className="text-xs font-semibold text-[#A16207] block mb-1">
+              115 Draws (Extended)
+            </span>
+            <div className="text-xl sm:text-2xl font-bold text-[#292929] tabular-nums">
+              {plannedBlue115Baseline.toLocaleString()}{' '}
+              <span className="text-xs text-[#74716D] font-normal">Dia baseline</span>
+            </div>
+            <div className="mt-2 text-xs text-[#5C5853] space-y-1">
+              <p>Possible range: <strong className="font-semibold text-[#292929] tabular-nums">3,098–3,137 Dia</strong></p>
+              <p className="text-[#74716D]">+15 draws (@ {extraCostPerDraw} Dia/draw).</p>
+              <p className="text-[#74716D]">Adjusted: <strong className="font-semibold text-[#292929] tabular-nums">{plannedBlue115Actual} Dia</strong></p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-md bg-[#F7F6F2] border border-[#E9E6E0]">
+            <span className="text-xs font-semibold text-[#C2410C] block mb-1">
+              120 Draws (Extra Safety)
+            </span>
+            <div className="text-xl sm:text-2xl font-bold text-[#292929] tabular-nums">
+              {plannedBlue120Baseline.toLocaleString()}{' '}
+              <span className="text-xs text-[#74716D] font-normal">Dia baseline</span>
+            </div>
+            <div className="mt-2 text-xs text-[#5C5853] space-y-1">
+              <p>Possible range: <strong className="font-semibold text-[#292929] tabular-nums">3,348–3,387 Dia</strong></p>
+              <p className="text-[#74716D]">+20 draws (@ {extraCostPerDraw} Dia/draw).</p>
+              <p className="text-[#74716D]">Adjusted: <strong className="font-semibold text-[#292929] tabular-nums">{plannedBlue120Actual} Dia</strong></p>
             </div>
           </div>
         </div>

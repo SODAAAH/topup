@@ -8,14 +8,21 @@ interface ProjectionComparisonProps {
 }
 
 export const ProjectionComparison: React.FC<ProjectionComparisonProps> = ({ result }) => {
-  const { optimisticComparison, backupComparison, conservativeComparison, draws, trueAverage } = result;
+  const {
+    optimisticComparison,
+    backupComparison,
+    conservativeComparison,
+    safetyComparison,
+    draws,
+    trueAverage,
+  } = result;
 
   const renderTargetCard = (
     targetName: string,
     targetDraws: number,
     benchmarkRate: number,
     comparison: typeof optimisticComparison,
-    accentStyle: 'optimistic' | 'backup' | 'extended'
+    accentStyle: 'optimistic' | 'backup' | 'extended' | 'safety'
   ) => {
     const isCompleted = draws >= targetDraws;
     const surplus = comparison.differenceFromGoal;
@@ -26,12 +33,15 @@ export const ProjectionComparison: React.FC<ProjectionComparisonProps> = ({ resu
         ? 'bg-[#EDF7F1] text-[#1E7E4E] border-[#C7E9D5]'
         : accentStyle === 'backup'
         ? 'bg-[#EEF5FC] text-[#1D64C2] border-[#C6DFFA]'
-        : 'bg-[#FEF9EE] text-[#A16207] border-[#F6E2B6]';
+        : accentStyle === 'extended'
+        ? 'bg-[#FEF9EE] text-[#A16207] border-[#F6E2B6]'
+        : 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]';
 
     const isMatched =
       (result.verdict === 'green' && accentStyle === 'optimistic') ||
       (result.verdict === 'blue' && accentStyle === 'backup') ||
-      ((result.verdict === 'yellow' || result.verdict === 'red') && accentStyle === 'extended');
+      (result.verdict === 'yellow' && accentStyle === 'extended') ||
+      ((result.verdict === 'orange' || result.verdict === 'red') && accentStyle === 'safety');
 
     return (
       <div
@@ -138,12 +148,12 @@ export const ProjectionComparison: React.FC<ProjectionComparisonProps> = ({ resu
             Where are you heading?
           </h3>
           <p className="text-xs text-[#74716D]">
-            Three planning targets: Optimistic (100 draws), Backup (110 draws), and Extended (115 draws).
+            Four planning targets: Optimistic (100 draws), Backup (110 draws), Extended (115 draws), and Extra Safety (120 draws).
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {renderTargetCard(
           'Optimistic',
           EVENT_CONFIG.optimisticDraws,
@@ -167,12 +177,20 @@ export const ProjectionComparison: React.FC<ProjectionComparisonProps> = ({ resu
           conservativeComparison,
           'extended'
         )}
+
+        {renderTargetCard(
+          'Extra Safety',
+          EVENT_CONFIG.safetyDraws,
+          EVENT_CONFIG.safetyBenchmarkRate,
+          safetyComparison,
+          'safety'
+        )}
       </div>
 
       <div className="p-3.5 rounded-lg bg-[#F7F6F2] border border-[#E9E6E0] text-xs text-[#74716D] flex items-start gap-2.5">
         <Info className="w-4 h-4 text-[#98948D] shrink-0 mt-0.5" aria-hidden="true" />
         <p className="leading-relaxed">
-          All benchmarks deduct the 105 guaranteed milestone remnants (1,600 - 105 = 1,495 remnants from pulls). The 100-draw optimistic mark requires 14.95 remnants per draw, the 110-draw Tipid backup scenario requires 13.5909 remnants per draw, and the 115-draw extended cushion requires 13.00 remnants per draw.
+          All benchmarks deduct the 105 guaranteed milestone remnants (1,600 - 105 = 1,495 remnants from pulls). The 100-draw optimistic mark requires 14.95 remnants per draw, the 110-draw Tipid backup scenario requires 13.5909 remnants per draw, the 115-draw extended cushion requires 13.00 remnants per draw, and the 120-draw extra safety contingency requires 12.4583 remnants per draw. 120 draws is a conservative planning reference and does not represent an official event pity or guaranteed maximum.
         </p>
       </div>
     </div>

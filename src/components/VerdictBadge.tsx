@@ -72,6 +72,14 @@ export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
           tag: 'bg-[#FDF0D5] text-[#A16207]',
           icon: Target,
         };
+      case 'orange':
+        return {
+          wrapper: 'bg-[#FFF7ED] border-[#FED7AA]',
+          text: 'text-[#C2410C]',
+          dot: 'bg-[#C2410C]',
+          tag: 'bg-[#FFEDD5] text-[#C2410C]',
+          icon: Target,
+        };
       case 'red':
         return {
           wrapper: 'bg-[#FDF2F4] border-[#F8D2D9]',

@@ -61,10 +61,17 @@ export const DetailedStats: React.FC<DetailedStatsProps> = ({ result }) => {
         </span>
       );
     }
-    if (result.estimateCategory === 'above_115') {
+    if (result.estimateCategory === 'between_115_120') {
+      return (
+        <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF7ED] text-[#C2410C] border border-[#FED7AA]">
+          Safety range (115–120)
+        </span>
+      );
+    }
+    if (result.estimateCategory === 'above_120' || result.estimateCategory === 'above_115') {
       return (
         <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-[#FDF2F4] text-[#B52E45] border border-[#F8D2D9]">
-          Above 115 draws
+          Above 120 draws
         </span>
       );
     }
@@ -126,14 +133,14 @@ export const DetailedStats: React.FC<DetailedStatsProps> = ({ result }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 pb-5 sm:pb-6 border-b border-[#E9E6E0]">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 pb-5 sm:pb-6 border-b border-[#E9E6E0]">
         <div>
           <span className="text-xs text-[#74716D] block">Your true average</span>
           <div className="mt-1 text-lg sm:text-xl font-bold font-mono text-[#292929] tabular-nums">
             {result.trueAverage !== null ? result.trueAverage.toFixed(2) : '—'}
             <span className="text-xs font-normal text-[#74716D] ml-1">/ draw</span>
           </div>
-          <span className="text-[11px] text-[#98948D] block mt-0.5">Milestone rewards deducted</span>
+          <span className="text-[11px] text-[#98948D] block mt-0.5">Milestones deducted</span>
         </div>
 
         <div>
@@ -170,6 +177,18 @@ export const DetailedStats: React.FC<DetailedStatsProps> = ({ result }) => {
             <span className="text-xs font-normal text-[#74716D] ml-1">/ draw</span>
           </div>
           <span className="text-[11px] text-[#98948D] block mt-0.5">Extended cushion target</span>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-[#74716D]">120-draw pace</span>
+            {getDeltaBadge(result.diffFromSafetyBenchmark)}
+          </div>
+          <div className="mt-1 text-lg sm:text-xl font-bold font-mono text-[#292929] tabular-nums">
+            {EVENT_CONFIG.safetyBenchmarkRate.toFixed(2)}
+            <span className="text-xs font-normal text-[#74716D] ml-1">/ draw</span>
+          </div>
+          <span className="text-[11px] text-[#98948D] block mt-0.5">Extra safety contingency</span>
         </div>
       </div>
 
