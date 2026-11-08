@@ -5,50 +5,29 @@ import { EVENT_CONFIG } from '../config/eventConfig';
 interface HeaderProps {
   onResetClick: () => void;
   hasDataToReset: boolean;
-  estimatedAdditionalDraws?: number | null;
-  isGoalReached?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onResetClick,
   hasDataToReset,
-  estimatedAdditionalDraws,
-  isGoalReached,
 }) => {
   return (
     <header className="bg-white border-b border-[#E9E6E0] sticky top-0 z-30">
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-[#292929]">
-              Kagura Ashen Remnant Tracker
-            </h1>
-            <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-[#BE9B57]" aria-hidden="true" />
-            <span className="text-xs font-medium text-[#B52E45] bg-[#FDF2F4] px-2 py-0.5 rounded border border-[#F8D2D9]">
-              {EVENT_CONFIG.eventSubtitle}
-            </span>
-          </div>
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-[#292929]">
+            Kagura Ashen Remnant Tracker
+          </h1>
           <p className="text-xs text-[#74716D] mt-0.5">
-            Mobile Legends: Bang Bang Legend Skin event companion
+            Mobile Legends: Bang Bang event companion
           </p>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto justify-between sm:justify-end pt-1 sm:pt-0 flex-wrap">
+        <div className="flex items-center gap-2.5">
           <div className="px-3 py-1.5 rounded-md bg-[#F7F6F2] border border-[#E9E6E0] text-xs font-medium text-[#5C5853] flex items-center gap-1.5">
             <span className="text-[#98948D]">Goal:</span>
             <strong className="text-[#292929] font-semibold tabular-nums">{EVENT_CONFIG.requiredRemnants.toLocaleString()} Remnants</strong>
           </div>
-
-          {isGoalReached ? (
-            <div className="px-2.5 py-1.5 rounded-md bg-[#EDF7F1] border border-[#C7E9D5] text-xs font-medium text-[#1E7E4E] flex items-center gap-1">
-              <span>Goal reached</span>
-            </div>
-          ) : estimatedAdditionalDraws !== null && estimatedAdditionalDraws !== undefined ? (
-            <div className="px-2.5 py-1.5 rounded-md bg-white border border-[#E9E6E0] text-xs font-medium text-[#74716D] flex items-center gap-1">
-              <span>Remaining:</span>
-              <strong className="text-[#292929] font-semibold tabular-nums">~{estimatedAdditionalDraws} draws</strong>
-            </div>
-          ) : null}
 
           <button
             type="button"

@@ -99,10 +99,7 @@ export const DiamondBudgetTracker: React.FC<DiamondBudgetTrackerProps> = ({
     <div className="space-y-5 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E9E6E0]">
         <div>
-          <span className="text-xs font-semibold text-[#B52E45]">
-            Resource and expense ledger
-          </span>
-          <h2 className="text-lg sm:text-2xl font-bold text-[#292929] flex items-center gap-2 mt-0.5">
+          <h2 className="text-lg sm:text-2xl font-bold text-[#292929] flex items-center gap-2">
             <Coins className="w-5 h-5 text-[#BE9B57]" aria-hidden="true" />
             Diamond Budget & Real-Money Expense Tracker
           </h2>

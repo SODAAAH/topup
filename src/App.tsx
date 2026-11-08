@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Header } from './components/Header';
 import { NavigationTabs } from './components/NavigationTabs';
-import { GoalProgressBar } from './components/GoalProgressBar';
 import { CalculatorForm } from './components/CalculatorForm';
 import { MilestoneSettings } from './components/MilestoneSettings';
 import { VerdictBadge } from './components/VerdictBadge';
-import { ConfidenceIndicator } from './components/ConfidenceIndicator';
 import { DetailedStats } from './components/DetailedStats';
 import { ProjectionComparison } from './components/ProjectionComparison';
 import { HelpAccordion } from './components/HelpAccordion';
@@ -27,7 +25,7 @@ import {
 } from './utils/storage';
 import { EVENT_CONFIG } from './config/eventConfig';
 import { INITIAL_TIPID_STATE } from './config/tipidPlanConfig';
-import { ShieldCheck, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('tracker');
@@ -219,8 +217,6 @@ export const App: React.FC = () => {
       <Header
         onResetClick={() => handleOpenReset('all')}
         hasDataToReset={hasDataToReset}
-        estimatedAdditionalDraws={calculationResult.estimatedAdditionalDraws}
-        isGoalReached={calculationResult.isGoalReached}
       />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-8 py-4 sm:py-8 space-y-5 sm:space-y-6">
@@ -242,32 +238,11 @@ export const App: React.FC = () => {
 
         {activeTab === 'tracker' && (
           <div className="space-y-5 sm:space-y-6 animate-in fade-in duration-150">
-            <section aria-labelledby="tracker-heading" className="space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <div>
-                  <span className="text-xs font-semibold text-[#B52E45]">
-                    Pacing analysis
-                  </span>
-                  <h2 id="tracker-heading" className="text-xl sm:text-3xl font-bold tracking-tight text-[#292929]">
-                    Track your pace to 1,600 Ashen Remnants
-                  </h2>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs text-[#5C5853] bg-white px-3 py-1.5 rounded-md border border-[#E9E6E0] self-start sm:self-auto">
-                  <ShieldCheck className="w-4 h-4 text-[#1E5D38] shrink-0" aria-hidden="true" />
-                  <span>Offline deterministic engine</span>
-                </div>
-              </div>
-              <p className="text-xs sm:text-sm text-[#74716D] max-w-3xl leading-relaxed">
-                Enter your total completed draws and your current Ashen Remnants balance below, or sync draws directly from your recorded Tipid Plan checklist. The calculator separates one-time milestone rewards from your normal pull rate to give you your true remnant average per draw and accurate forecasts toward the 1,600-remnant Kagura Legend Skin goal.
-              </p>
+            <section aria-labelledby="tracker-heading" className="pt-1">
+              <h2 id="tracker-heading" className="text-xl sm:text-2xl font-bold tracking-tight text-[#292929]">
+                Track your pace to 1,600 Ashen Remnants
+              </h2>
             </section>
-
-            <GoalProgressBar
-              currentRemnants={calculationResult.currentRemnants}
-              remnantsRemaining={calculationResult.remnantsRemaining}
-              progressPercentage={calculationResult.progressPercentage}
-              isGoalReached={calculationResult.isGoalReached}
-            />
 
             <section aria-labelledby="calculator-form-heading">
               <h3 id="calculator-form-heading" className="sr-only">Calculator Inputs</h3>
@@ -304,13 +279,9 @@ export const App: React.FC = () => {
                 goalReachedMessage={calculationResult.goalReachedMessage}
                 draws={calculationResult.draws}
                 currentRemnants={calculationResult.currentRemnants}
-              />
-
-              <ConfidenceIndicator
                 confidence={calculationResult.confidence}
-                title={calculationResult.confidenceTitle}
-                message={calculationResult.confidenceMessage}
-                draws={calculationResult.draws}
+                confidenceTitle={calculationResult.confidenceTitle}
+                confidenceMessage={calculationResult.confidenceMessage}
               />
             </section>
 
@@ -369,7 +340,7 @@ export const App: React.FC = () => {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#74716D]">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-[#98948D] shrink-0" aria-hidden="true" />
-            <span>Kagura Ashen Remnant Tracker and Tipid Suite • Feast of Eternity event companion</span>
+            <span>Kagura Ashen Remnant Tracker • Mobile Legends: Bang Bang event companion</span>
           </div>
           <div className="text-[#74716D] text-center sm:text-right">
             <span>Benchmarks: 100 draws (14.95) • 110 draws (13.5909) • 115 draws (13.00) • 120 draws (12.4583)</span>

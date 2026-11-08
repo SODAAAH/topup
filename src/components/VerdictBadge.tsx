@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TrendingUp, Target, AlertCircle, HelpCircle, Trophy, Compass, Copy, Check } from 'lucide-react';
-import { VerdictType } from '../types/tracker';
+import { ConfidenceLevel, VerdictType } from '../types/tracker';
 
 interface VerdictBadgeProps {
   verdict: VerdictType;
@@ -12,6 +12,9 @@ interface VerdictBadgeProps {
   goalReachedMessage: string;
   draws?: number;
   currentRemnants?: number;
+  confidence?: ConfidenceLevel;
+  confidenceTitle?: string;
+  confidenceMessage?: string;
 }
 
 export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
@@ -24,12 +27,15 @@ export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
   goalReachedMessage,
   draws = 0,
   currentRemnants = 0,
+  confidence,
+  confidenceTitle,
+  confidenceMessage,
 }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopySummary = async () => {
     if (trueAverage === null) return;
-    const text = `Kagura Feast of Eternity: ${draws} draws • ${currentRemnants} remnants • ${trueAverage.toFixed(2)}/draw (${title})`;
+    const text = `Kagura Ashen Remnants: ${draws} draws • ${currentRemnants} remnants • ${trueAverage.toFixed(2)}/draw (${title})`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -148,6 +154,13 @@ export const VerdictBadge: React.FC<VerdictBadgeProps> = ({
               <p className="mt-1 text-xs sm:text-sm text-[#5C5853] leading-relaxed max-w-3xl">
                 {message}
               </p>
+
+              {confidenceMessage && draws > 0 && confidence !== 'none' && confidence !== 'informative' && (
+                <div className="mt-2.5 pt-2 border-t border-black/10 text-xs text-[#5C5853] flex items-center gap-1.5 flex-wrap">
+                  <span className="font-semibold text-[#292929]">{confidenceTitle} ({draws} draws):</span>
+                  <span>{confidenceMessage}</span>
+                </div>
+              )}
             </div>
           </div>
 

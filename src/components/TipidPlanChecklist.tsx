@@ -170,9 +170,9 @@ export const TipidPlanChecklist: React.FC<TipidPlanChecklistProps> = ({
         </div>
       </div>
 
-      <div className="p-4 rounded-lg bg-[#FEF9EE] border border-[#F6E2B6] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div className="p-3.5 sm:p-4 rounded-lg bg-[#FAF9F5] border border-[#E9E6E0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-start gap-2.5">
-          <AlertCircle className="w-4 h-4 text-[#A16207] shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertCircle className="w-4 h-4 text-[#9D7E3F] shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <span className="font-semibold text-[#292929] block">
               Promo Diamond requirement

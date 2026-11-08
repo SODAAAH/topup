@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, AlertCircle, Info } from 'lucide-react';
+import { Check, AlertCircle } from 'lucide-react';
 import { CalculationResult } from '../types/tracker';
 import { EVENT_CONFIG } from '../config/eventConfig';
 
@@ -185,13 +185,6 @@ export const ProjectionComparison: React.FC<ProjectionComparisonProps> = ({ resu
           safetyComparison,
           'safety'
         )}
-      </div>
-
-      <div className="p-3.5 rounded-lg bg-[#F7F6F2] border border-[#E9E6E0] text-xs text-[#74716D] flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-[#98948D] shrink-0 mt-0.5" aria-hidden="true" />
-        <p className="leading-relaxed">
-          All benchmarks deduct the 105 guaranteed milestone remnants (1,600 - 105 = 1,495 remnants from pulls). The 100-draw optimistic mark requires 14.95 remnants per draw, the 110-draw Tipid backup scenario requires 13.5909 remnants per draw, the 115-draw extended cushion requires 13.00 remnants per draw, and the 120-draw extra safety contingency requires 12.4583 remnants per draw. 120 draws is a conservative planning reference and does not represent an official event pity or guaranteed maximum.
-        </p>
       </div>
     </div>
   );
