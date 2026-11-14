@@ -188,3 +188,4 @@ export const DrawDistributionChart: React.FC<DrawDistributionChartProps> = ({
     </div>
   );
 };
+
